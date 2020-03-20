@@ -30,6 +30,8 @@ import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MERGING_FEATURE_PEN
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MERGING_MAX_DISTANCE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_SPLITTING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_SPLITTING_MAX_DISTANCE;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MASK_IMG;
+
 import static fiji.plugin.trackmate.util.TMUtils.checkMapKeys;
 import static fiji.plugin.trackmate.util.TMUtils.checkParameter;
 
@@ -55,6 +57,8 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableModel;
 
 import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.util.GraphDistance;
+import ij.ImagePlus;
 
 public class LAPUtils {
 
@@ -178,8 +182,22 @@ public class LAPUtils {
 	 * twice as far.
 	 */
 	public static final double computeLinkingCostFor(final Spot s0, final Spot s1,
-			final double distanceCutOff, final double blockingValue, final Map<String, Double> featurePenalties) {
-		final double d2 = s0.squareDistanceTo(s1);
+			final double distanceCutOff, final double blockingValue, final Map<String, Double> featurePenalties,
+			final ImagePlus mask) {
+
+		System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
+		double d2 = 0.0;
+		if ( null == mask )
+			d2 = s0.squareDistanceTo(s1);
+		else
+		{
+			d2 = GraphDistance.dijkstra(mask,
+										new int[] { (int) Math.floor( s0.getFeature( Spot.POSITION_X ) ),
+					 							    (int) Math.floor( s0.getFeature( Spot.POSITION_Y ) ) },
+										new int[] { (int) Math.floor( s1.getFeature( Spot.POSITION_X ) ),
+					 							    (int) Math.floor( s1.getFeature( Spot.POSITION_Y ) ) } );
+			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApédletépdle");
+		}
 
 		// Distance threshold
 		if (d2 > distanceCutOff * distanceCutOff) {
@@ -260,6 +278,7 @@ public class LAPUtils {
 		optionalKeys.add(KEY_GAP_CLOSING_FEATURE_PENALTIES);
 		optionalKeys.add(KEY_SPLITTING_FEATURE_PENALTIES);
 		optionalKeys.add(KEY_MERGING_FEATURE_PENALTIES);
+		optionalKeys.add(KEY_MASK_IMG);
 		ok = ok & checkMapKeys( settings, mandatoryKeys, optionalKeys, errorHolder );
 
 		return ok;

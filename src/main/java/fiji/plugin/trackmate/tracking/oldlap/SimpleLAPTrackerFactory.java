@@ -38,6 +38,6 @@ public class SimpleLAPTrackerFactory extends LAPTrackerFactory
 	public ConfigurationPanel getTrackerConfigurationPanel( final Model model )
 	{
 		final String spaceUnits = model.getSpaceUnits();
-		return new SimpleLAPTrackerSettingsPanel( THIS_NAME, THIS_INFO_TEXT, spaceUnits );
+		return new SimpleLAPTrackerSettingsPanel( THIS_NAME, THIS_INFO_TEXT, spaceUnits, model.getMaskImg() );
 	}
 }

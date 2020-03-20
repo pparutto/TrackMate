@@ -13,6 +13,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
+import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -24,10 +25,14 @@ import javax.swing.SwingConstants;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.gui.panels.components.JNumericTextField;
+import fiji.plugin.trackmate.io.IOUtils;
 import fiji.util.NumberParser;
 import ij.ImagePlus;
+import ij.ImageStack;
 import ij.WindowManager;
 import ij.gui.Roi;
+import ij.io.Opener;
+import ij.measure.Calibration;
 
 public class StartDialogPanel extends ActionListenablePanel
 {
@@ -80,6 +85,8 @@ public class StartDialogPanel extends ActionListenablePanel
 	private final JNumericTextField jTextFieldTimeInterval;
 
 	private ImagePlus imp;
+
+	private ImagePlus maskImg;
 
 	private boolean impValid = false;
 
@@ -282,6 +289,67 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldTimeInterval.gridy = 8;
 		add( jTextFieldTimeInterval, gbc_jTextFieldTimeInterval );
 
+		final JLabel jLabelMaskImg = new JLabel( "Mask image:" );
+		jLabelMaskImg.setFont( SMALL_FONT );
+		final GridBagConstraints gbc_jLabelMaskImg = new GridBagConstraints();
+		gbc_jLabelMaskImg.anchor = GridBagConstraints.SOUTH;
+		gbc_jLabelMaskImg.fill = GridBagConstraints.HORIZONTAL;
+		gbc_jLabelMaskImg.insets = new Insets( 5, 5, 5, 5 );
+		gbc_jLabelMaskImg.gridwidth = 4;
+		gbc_jLabelMaskImg.gridx = 0;
+		gbc_jLabelMaskImg.gridy = 9;
+		add( jLabelMaskImg, gbc_jLabelMaskImg );
+
+		final JLabel jLabelMaskImgSel = new JLabel( "Select mask image:" );
+		jLabelMaskImgSel.setFont( SMALL_FONT );
+		final GridBagConstraints gbc_jLabelMaskImgSel = new GridBagConstraints();
+		gbc_jLabelMaskImgSel.anchor = GridBagConstraints.EAST;
+		gbc_jLabelMaskImgSel.insets = new Insets( 5, 5, 5, 5 );
+		gbc_jLabelMaskImgSel.gridwidth = 2;
+		gbc_jLabelMaskImgSel.gridx = 0;
+		gbc_jLabelMaskImgSel.gridy = 10;
+		add( jLabelMaskImgSel, gbc_jLabelMaskImgSel );
+
+		JButton selMaskImg = new JButton("File");
+		selMaskImg.addActionListener(new ActionListener()
+		{
+			@Override
+			public void actionPerformed(ActionEvent e)
+			{
+				File res = IOUtils.askForFileForLoading(new File(""), "Select mask file", null, null);
+				if (res != null)
+				{
+					Opener op = new Opener();
+					ImagePlus tmp = op.openImage(res.getPath());
+
+					maskImg = new ImagePlus();
+					Calibration calib = imp.getCalibration();
+					maskImg.getCalibration().pixelWidth =  calib.pixelWidth;
+					maskImg.getCalibration().pixelHeight = calib.pixelHeight;
+					maskImg.getCalibration().pixelDepth = calib.pixelDepth;
+					maskImg.setDimensions(1, 1, imp.getNFrames());
+					maskImg.setOpenAsHyperStack(true);
+
+					ImageStack ims = new ImageStack();
+					for (int i = 0; i < imp.getNFrames(); ++i)
+						ims.addSlice(tmp.getProcessor());
+					maskImg.setStack(ims);
+
+					System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
+				}
+			}
+		});
+		selMaskImg.setHorizontalAlignment( SwingConstants.CENTER );
+		selMaskImg.setFont( SMALL_FONT );
+		final GridBagConstraints gbc_selMaskImg = new GridBagConstraints();
+		gbc_selMaskImg.fill = GridBagConstraints.HORIZONTAL;
+		gbc_selMaskImg.anchor = GridBagConstraints.NORTH;
+		gbc_selMaskImg.insets = new Insets( 5, 5, 5, 5 );
+		gbc_selMaskImg.gridx = 2;
+		gbc_selMaskImg.gridy = 10;
+		add( selMaskImg, gbc_selMaskImg );
+
+
 		final JLabel jLabelCropSetting = new JLabel( "Crop settings (in pixels, 0-based):" );
 		jLabelCropSetting.setFont( SMALL_FONT );
 		final GridBagConstraints gbc_jLabelCropSetting = new GridBagConstraints();
@@ -290,7 +358,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jLabelCropSetting.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelCropSetting.gridwidth = 4;
 		gbc_jLabelCropSetting.gridx = 0;
-		gbc_jLabelCropSetting.gridy = 9;
+		gbc_jLabelCropSetting.gridy = 11;
 		add( jLabelCropSetting, gbc_jLabelCropSetting );
 
 		jTextFieldXStart = new JNumericTextField();
@@ -303,7 +371,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldXStart.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldXStart.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldXStart.gridx = 1;
-		gbc_jTextFieldXStart.gridy = 10;
+		gbc_jTextFieldXStart.gridy = 12;
 		add( jTextFieldXStart, gbc_jTextFieldXStart );
 
 		jTextFieldXEnd = new JNumericTextField();
@@ -316,7 +384,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldXEnd.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldXEnd.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldXEnd.gridx = 3;
-		gbc_jTextFieldXEnd.gridy = 10;
+		gbc_jTextFieldXEnd.gridy = 12;
 		add( jTextFieldXEnd, gbc_jTextFieldXEnd );
 
 		final JLabel jLabelX = new JLabel( "X" );
@@ -325,7 +393,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jLabelX.anchor = GridBagConstraints.EAST;
 		gbc_jLabelX.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelX.gridx = 0;
-		gbc_jLabelX.gridy = 10;
+		gbc_jLabelX.gridy = 12;
 		add( jLabelX, gbc_jLabelX );
 
 		final JLabel jLabelTo1 = new JLabel( "to" );
@@ -333,7 +401,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		final GridBagConstraints gbc_jLabelTo1 = new GridBagConstraints();
 		gbc_jLabelTo1.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelTo1.gridx = 2;
-		gbc_jLabelTo1.gridy = 10;
+		gbc_jLabelTo1.gridy = 12;
 		add( jLabelTo1, gbc_jLabelTo1 );
 
 		final JLabel jLabelY = new JLabel( "Y" );
@@ -342,7 +410,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jLabelY.anchor = GridBagConstraints.EAST;
 		gbc_jLabelY.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelY.gridx = 0;
-		gbc_jLabelY.gridy = 11;
+		gbc_jLabelY.gridy = 13;
 		add( jLabelY, gbc_jLabelY );
 
 		final JLabel jLabelTo3 = new JLabel( "to" );
@@ -350,7 +418,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		final GridBagConstraints gbc_jLabelTo3 = new GridBagConstraints();
 		gbc_jLabelTo3.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelTo3.gridx = 2;
-		gbc_jLabelTo3.gridy = 12;
+		gbc_jLabelTo3.gridy = 14;
 		add( jLabelTo3, gbc_jLabelTo3 );
 
 		jTextFieldYStart = new JNumericTextField();
@@ -363,7 +431,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldYStart.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldYStart.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldYStart.gridx = 1;
-		gbc_jTextFieldYStart.gridy = 11;
+		gbc_jTextFieldYStart.gridy = 13;
 		add( jTextFieldYStart, gbc_jTextFieldYStart );
 
 		final JLabel jLabelTo2 = new JLabel( "to" );
@@ -371,7 +439,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		final GridBagConstraints gbc_jLabelTo2 = new GridBagConstraints();
 		gbc_jLabelTo2.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelTo2.gridx = 2;
-		gbc_jLabelTo2.gridy = 11;
+		gbc_jLabelTo2.gridy = 13;
 		add( jLabelTo2, gbc_jLabelTo2 );
 
 		final JLabel jLabelZ = new JLabel( "Z" );
@@ -380,7 +448,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jLabelZ.anchor = GridBagConstraints.EAST;
 		gbc_jLabelZ.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelZ.gridx = 0;
-		gbc_jLabelZ.gridy = 12;
+		gbc_jLabelZ.gridy = 14;
 		add( jLabelZ, gbc_jLabelZ );
 
 		jTextFieldYEnd = new JNumericTextField();
@@ -393,7 +461,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldYEnd.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldYEnd.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldYEnd.gridx = 3;
-		gbc_jTextFieldYEnd.gridy = 11;
+		gbc_jTextFieldYEnd.gridy = 13;
 		add( jTextFieldYEnd, gbc_jTextFieldYEnd );
 
 		jTextFieldZStart = new JNumericTextField();
@@ -406,7 +474,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldZStart.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldZStart.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldZStart.gridx = 1;
-		gbc_jTextFieldZStart.gridy = 12;
+		gbc_jTextFieldZStart.gridy = 14;
 		add( jTextFieldZStart, gbc_jTextFieldZStart );
 
 		jTextFieldZEnd = new JNumericTextField();
@@ -419,7 +487,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldZEnd.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldZEnd.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldZEnd.gridx = 3;
-		gbc_jTextFieldZEnd.gridy = 12;
+		gbc_jTextFieldZEnd.gridy = 14;
 		add( jTextFieldZEnd, gbc_jTextFieldZEnd );
 
 		jTextFieldTStart = new JNumericTextField();
@@ -432,7 +500,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldTStart.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldTStart.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldTStart.gridx = 1;
-		gbc_jTextFieldTStart.gridy = 13;
+		gbc_jTextFieldTStart.gridy = 15;
 		add( jTextFieldTStart, gbc_jTextFieldTStart );
 
 		final JLabel jLabelT = new JLabel( "T" );
@@ -441,7 +509,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jLabelT.anchor = GridBagConstraints.EAST;
 		gbc_jLabelT.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelT.gridx = 0;
-		gbc_jLabelT.gridy = 13;
+		gbc_jLabelT.gridy = 15;
 		add( jLabelT, gbc_jLabelT );
 
 		jTextFieldTEnd = new JNumericTextField();
@@ -454,7 +522,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jTextFieldTEnd.anchor = GridBagConstraints.NORTH;
 		gbc_jTextFieldTEnd.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jTextFieldTEnd.gridx = 3;
-		gbc_jTextFieldTEnd.gridy = 13;
+		gbc_jTextFieldTEnd.gridy = 15;
 		add( jTextFieldTEnd, gbc_jTextFieldTEnd );
 
 		final JLabel jLabelTo4 = new JLabel( "to" );
@@ -462,7 +530,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		final GridBagConstraints gbc_jLabelTo4 = new GridBagConstraints();
 		gbc_jLabelTo4.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jLabelTo4.gridx = 2;
-		gbc_jLabelTo4.gridy = 13;
+		gbc_jLabelTo4.gridy = 15;
 		add( jLabelTo4, gbc_jLabelTo4 );
 
 		jButtonRefresh = new JButton( "Refresh source" );
@@ -473,7 +541,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		gbc_jButtonRefresh.insets = new Insets( 5, 5, 5, 5 );
 		gbc_jButtonRefresh.gridwidth = 4;
 		gbc_jButtonRefresh.gridx = 0;
-		gbc_jButtonRefresh.gridy = 14;
+		gbc_jButtonRefresh.gridy = 16;
 		add( jButtonRefresh, gbc_jButtonRefresh );
 		jButtonRefresh.addActionListener( new ActionListener()
 		{
@@ -484,7 +552,7 @@ public class StartDialogPanel extends ActionListenablePanel
 				getFrom( imp );
 				fireAction( IMAGEPLUS_REFRESHED );
 			}
-		} );
+		});
 	}
 
 	/*
@@ -512,6 +580,8 @@ public class StartDialogPanel extends ActionListenablePanel
 	public void updateTo( final Model model, final Settings settings )
 	{
 		settings.imp = imp;
+		settings.maskImg = maskImg;
+
 		// Crop cube
 		settings.tstart = NumberParser.parseInteger( jTextFieldTStart.getText() );
 		settings.tend = NumberParser.parseInteger( jTextFieldTEnd.getText() );
@@ -532,6 +602,7 @@ public class StartDialogPanel extends ActionListenablePanel
 		settings.nframes = imp.getNFrames();
 		// Units
 		model.setPhysicalUnits( jLabelUnits1.getText(), jLabelUnits4.getText() );
+		model.setMaskImg(this.maskImg);
 		// Roi
 		final Roi roi = imp.getRoi();
 		if ( null != roi )

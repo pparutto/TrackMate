@@ -220,7 +220,8 @@ public class LogDetectorConfigurationPanel extends ConfigurationPanel
 			{
 				final Settings lSettings = new Settings();
 				lSettings.setFrom( imp );
-				final int frame = imp.getFrame() - 1;
+				//final int frame = imp.getFrame() - 1;
+				final int frame = settings.maskImg.getFrame() - 1;
 				lSettings.tstart = frame;
 				lSettings.tend = frame;
 

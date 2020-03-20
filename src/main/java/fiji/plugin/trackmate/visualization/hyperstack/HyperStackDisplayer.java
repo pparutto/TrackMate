@@ -28,6 +28,8 @@ public class HyperStackDisplayer extends AbstractTrackMateModelView
 
 	protected TrackOverlay trackOverlay;
 
+	protected MaskOverlay maskOverlay;
+
 	private SpotEditTool editTool;
 
 	private Roi initialROI;
@@ -49,8 +51,18 @@ public class HyperStackDisplayer extends AbstractTrackMateModelView
 		{
 			this.imp = ViewUtils.makeEmpytImagePlus( model );
 		}
-		this.spotOverlay = createSpotOverlay();
-		this.trackOverlay = createTrackOverlay();
+
+		if ( model.getMaskImg() != null )
+		{
+			this.spotOverlay = createSpotOverlay( model.getMaskImg() );
+			this.trackOverlay = createTrackOverlay( model.getMaskImg() );
+		}
+		else
+		{
+			this.spotOverlay = createSpotOverlay( this.imp );
+			this.trackOverlay = createTrackOverlay( this.imp );
+		}
+		this.maskOverlay = createMaskOverlay();
 	}
 
 	public HyperStackDisplayer( final Model model, final SelectionModel selectionModel )
@@ -68,9 +80,9 @@ public class HyperStackDisplayer extends AbstractTrackMateModelView
 	 *
 	 * @return the spot overlay
 	 */
-	protected SpotOverlay createSpotOverlay()
+	protected SpotOverlay createSpotOverlay(final ImagePlus baseImg)
 	{
-		return new SpotOverlay( model, imp, displaySettings );
+		return new SpotOverlay( model, baseImg, displaySettings );
 	}
 
 	/**
@@ -79,12 +91,20 @@ public class HyperStackDisplayer extends AbstractTrackMateModelView
 	 *
 	 * @return the track overlay
 	 */
-	protected TrackOverlay createTrackOverlay()
+	protected TrackOverlay createTrackOverlay(final ImagePlus baseImg)
 	{
-		final TrackOverlay to = new TrackOverlay( model, imp, displaySettings );
+		final TrackOverlay to = new TrackOverlay( model, baseImg, displaySettings );
 		final TrackColorGenerator colorGenerator = ( TrackColorGenerator ) displaySettings.get( KEY_TRACK_COLORING );
 		to.setTrackColorGenerator( colorGenerator );
 		return to;
+	}
+
+	protected MaskOverlay createMaskOverlay()
+	{
+		if ( model.getMaskImg() != null)
+			return new MaskOverlay( model, imp, displaySettings );
+		else
+			return null;
 	}
 
 	/*
@@ -163,54 +183,79 @@ public class HyperStackDisplayer extends AbstractTrackMateModelView
 	@Override
 	public void render()
 	{
-		initialROI = imp.getRoi();
+		ImagePlus curImg = model.getMaskImg();
+		if ( curImg == null )
+			curImg = imp;
+
+
+		initialROI = curImg.getRoi();
 		if ( initialROI != null )
 		{
-			imp.killRoi();
+			curImg.killRoi();
 		}
+
 
 		clear();
-		imp.setOpenAsHyperStack( true );
-		if ( !imp.isVisible() )
+		curImg.setOpenAsHyperStack( true );
+
+		if ( model.getMaskImg() != null )
 		{
-			imp.show();
+			curImg.show();
+
+			curImg.setOverlay( new Overlay() );
+			curImg.getOverlay().add( new ImageOverlay(imp, curImg, displaySettings ) );
+			curImg.getOverlay().add( spotOverlay );
+			curImg.getOverlay().add( trackOverlay );
 		}
 
-		addOverlay( spotOverlay );
-		addOverlay( trackOverlay );
-		imp.updateAndDraw();
+		if ( !curImg.isVisible() )
+			curImg.show();
+
+		curImg.updateAndDraw();
 		registerEditTool();
 	}
 
 	@Override
 	public void refresh()
 	{
-		if ( null != imp )
+		ImagePlus curImg = model.getMaskImg();
+		if ( curImg == null )
+			curImg = imp;
+
+		if ( null != curImg )
 		{
-			imp.updateAndDraw();
+			curImg.updateAndDraw();
 		}
 	}
 
 	@Override
 	public void clear()
 	{
-		Overlay overlay = imp.getOverlay();
+		ImagePlus curImg = model.getMaskImg();
+		if ( curImg == null )
+			curImg = imp;
+
+		Overlay overlay = curImg.getOverlay();
 		if ( overlay == null )
 		{
 			overlay = new Overlay();
-			imp.setOverlay( overlay );
+			curImg.setOverlay( overlay );
 		}
 		overlay.clear();
 		if ( initialROI != null )
 		{
-			imp.getOverlay().add( initialROI );
+			curImg.getOverlay().add( initialROI );
 		}
 		refresh();
 	}
 
 	public void addOverlay( final Roi overlay )
 	{
-		imp.getOverlay().add( overlay );
+		ImagePlus curImg = model.getMaskImg();
+		if ( curImg == null )
+			curImg = imp;
+
+		curImg.getOverlay().add( overlay );
 	}
 
 	public SelectionModel getSelectionModel()

@@ -4,6 +4,8 @@ import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_ALLOW_TRACK_MERGING
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_BLOCKING_VALUE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MERGING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MERGING_MAX_DISTANCE;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MASK_IMG;
+
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import Jama.Matrix;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.tracking.LAPUtils;
+import ij.ImagePlus;
 import net.imglib2.algorithm.MultiThreadedBenchmarkAlgorithm;
 import net.imglib2.algorithm.OutputAlgorithm;
 import net.imglib2.multithreading.SimpleMultiThreading;
@@ -60,6 +63,8 @@ public class MergingCostFunction extends MultiThreadedBenchmarkAlgorithm impleme
 
 	protected final List< Spot > middlePoints;
 
+	protected final ImagePlus maskImg;
+
 	protected Matrix m;
 
 	@SuppressWarnings( "unchecked" )
@@ -69,6 +74,7 @@ public class MergingCostFunction extends MultiThreadedBenchmarkAlgorithm impleme
 		this.blockingValue = ( Double ) settings.get( KEY_BLOCKING_VALUE );
 		this.featurePenalties = ( Map< String, Double > ) settings.get( KEY_MERGING_FEATURE_PENALTIES );
 		this.allowed = ( Boolean ) settings.get( KEY_ALLOW_TRACK_MERGING );
+		this.maskImg = ( ImagePlus ) settings.get( KEY_MASK_IMG );
 		this.trackSegments = trackSegments;
 		this.middlePoints = middlePoints;
 	}
@@ -128,7 +134,7 @@ public class MergingCostFunction extends MultiThreadedBenchmarkAlgorithm impleme
 								}
 
 								// Initial cost
-								final double cost = LAPUtils.computeLinkingCostFor( end, middle, maxDist, blockingValue, featurePenalties );
+								final double cost = LAPUtils.computeLinkingCostFor( end, middle, maxDist, blockingValue, featurePenalties, maskImg );
 								m.set( i, j, cost );
 							}
 						}

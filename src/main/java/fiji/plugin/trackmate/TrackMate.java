@@ -425,6 +425,23 @@ public class TrackMate implements Benchmark, MultiThreaded, Algorithm
 								{
 									prunedSpots = spotsThisFrame;
 								}
+
+								//Filter out spots that are not on an active mask zone
+								if ( null != settings.maskImg )
+								{
+									List < Spot > spts = new ArrayList< >();
+									for (final Spot spot: prunedSpots)
+									{
+										int[] p = new int[] {(int) Math.floor(spot.getFeature( Spot.POSITION_X ) / calibration[ 0 ]),
+															 (int) Math.floor(spot.getFeature( Spot.POSITION_Y ) / calibration[ 1 ])};
+
+										if (settings.maskImg.getPixel(p[0], p[1])[0] > 0)
+											spts.add(spot);
+									}
+
+									prunedSpots = spts;
+								}
+
 								// Add detection feature other than position
 								for ( final Spot spot : prunedSpots )
 								{

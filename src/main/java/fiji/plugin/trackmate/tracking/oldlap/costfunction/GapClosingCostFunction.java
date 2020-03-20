@@ -5,6 +5,7 @@ import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_BLOCKING_VALUE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_GAP_CLOSING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_GAP_CLOSING_MAX_DISTANCE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_GAP_CLOSING_MAX_FRAME_GAP;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MASK_IMG;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import Jama.Matrix;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.tracking.LAPUtils;
+import ij.ImagePlus;
 import net.imglib2.algorithm.MultiThreadedBenchmarkAlgorithm;
 import net.imglib2.algorithm.OutputAlgorithm;
 import net.imglib2.multithreading.SimpleMultiThreading;
@@ -63,6 +65,8 @@ public class GapClosingCostFunction extends MultiThreadedBenchmarkAlgorithm impl
 
 	protected final List< SortedSet< Spot > > trackSegments;
 
+	protected final ImagePlus maskImg;
+
 	protected Matrix m;
 
 	@SuppressWarnings( "unchecked" )
@@ -74,6 +78,7 @@ public class GapClosingCostFunction extends MultiThreadedBenchmarkAlgorithm impl
 		this.featurePenalties = ( Map< String, Double > ) settings.get( KEY_GAP_CLOSING_FEATURE_PENALTIES );
 		this.allowed = ( Boolean ) settings.get( KEY_ALLOW_GAP_CLOSING );
 		this.trackSegments = trackSegments;
+		this.maskImg = (ImagePlus) settings.get(KEY_MASK_IMG);
 	}
 
 	@Override
@@ -148,7 +153,7 @@ public class GapClosingCostFunction extends MultiThreadedBenchmarkAlgorithm impl
 									continue;
 								}
 
-								final double cost = LAPUtils.computeLinkingCostFor( end, lStart, maxDist, blockingValue, featurePenalties );
+								final double cost = LAPUtils.computeLinkingCostFor( end, lStart, maxDist, blockingValue, featurePenalties, maskImg );
 								m.set( i, j, cost );
 							}
 						}

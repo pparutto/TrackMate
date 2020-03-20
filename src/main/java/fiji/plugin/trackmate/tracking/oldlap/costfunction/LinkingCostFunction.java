@@ -3,6 +3,8 @@ package fiji.plugin.trackmate.tracking.oldlap.costfunction;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_BLOCKING_VALUE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_LINKING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_LINKING_MAX_DISTANCE;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MASK_IMG;
+
 
 import java.util.List;
 import java.util.Map;
@@ -10,6 +12,7 @@ import java.util.Map;
 import Jama.Matrix;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.tracking.LAPUtils;
+import ij.ImagePlus;
 
 /**
  * <p>
@@ -38,12 +41,15 @@ public class LinkingCostFunction implements CostFunctions
 
 	protected final double blockingValue;
 
+	protected final ImagePlus maskImg;
+
 	@SuppressWarnings( "unchecked" )
 	public LinkingCostFunction( final Map< String, Object > settings )
 	{
 		this.maxDist = ( Double ) settings.get( KEY_LINKING_MAX_DISTANCE );
 		this.featurePenalties = ( Map< String, Double > ) settings.get( KEY_LINKING_FEATURE_PENALTIES );
 		this.blockingValue = ( Double ) settings.get( KEY_BLOCKING_VALUE );
+		this.maskImg = (ImagePlus) settings.get(KEY_MASK_IMG);
 	}
 
 	@Override
@@ -62,7 +68,7 @@ public class LinkingCostFunction implements CostFunctions
 			{
 
 				s1 = t1.get( j );
-				final double cost = LAPUtils.computeLinkingCostFor( s0, s1, maxDist, blockingValue, featurePenalties );
+				final double cost = LAPUtils.computeLinkingCostFor( s0, s1, maxDist, blockingValue, featurePenalties, maskImg );
 				m.set( i, j, cost );
 			}
 		}

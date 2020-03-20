@@ -9,6 +9,7 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 import org.jgrapht.graph.SimpleWeightedGraph;
 
 import fiji.plugin.trackmate.features.FeatureFilter;
+import ij.ImagePlus;
 
 /**
  * <h1>The model for the data managed by TrackMate trackmate.</h1>
@@ -98,6 +99,9 @@ public class Model
 	 * The list of listeners listening to model content change.
 	 */
 	Set< ModelChangeListener > modelChangeListeners = new LinkedHashSet< >();
+
+
+	private ImagePlus maskImg = null;
 
 	/*
 	 * CONSTRUCTOR
@@ -228,6 +232,16 @@ public class Model
 	{
 		this.spaceUnits = spaceUnits;
 		this.timeUnits = timeUnits;
+	}
+
+	public void setMaskImg(final ImagePlus maskImg)
+	{
+		this.maskImg = maskImg;
+	}
+
+	public ImagePlus getMaskImg()
+	{
+		return this.maskImg;
 	}
 
 	/**

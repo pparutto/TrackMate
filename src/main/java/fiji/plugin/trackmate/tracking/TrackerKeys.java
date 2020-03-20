@@ -233,4 +233,6 @@ public class TrackerKeys
 
 	/** A default value for the {@value #KEY_BLOCKING_VALUE} parameter. */
 	public static final double DEFAULT_BLOCKING_VALUE = Double.POSITIVE_INFINITY;
+	
+	public static final String KEY_MASK_IMG = "MASK_IMG";
 }

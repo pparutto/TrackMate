@@ -32,6 +32,8 @@ public class Settings
 	 */
 	public ImagePlus imp;
 
+	public ImagePlus maskImg;
+
 	/**
 	 * The polygon of interest. This will be used to crop the image and to
 	 * discard found spots out of the polygon. If <code>null</code>, the whole

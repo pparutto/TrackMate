@@ -4,6 +4,8 @@ import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_ALLOW_TRACK_SPLITTI
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_BLOCKING_VALUE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_SPLITTING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_SPLITTING_MAX_DISTANCE;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MASK_IMG;
+
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import Jama.Matrix;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.tracking.LAPUtils;
+import ij.ImagePlus;
 import net.imglib2.algorithm.MultiThreadedBenchmarkAlgorithm;
 import net.imglib2.algorithm.OutputAlgorithm;
 import net.imglib2.multithreading.SimpleMultiThreading;
@@ -61,6 +64,8 @@ public class SplittingCostFunction extends MultiThreadedBenchmarkAlgorithm imple
 
 	protected final List< Spot > middlePoints;
 
+	protected final ImagePlus maskImg;
+
 	protected Matrix m;
 
 	/*
@@ -74,6 +79,7 @@ public class SplittingCostFunction extends MultiThreadedBenchmarkAlgorithm imple
 		this.blockingValue = ( Double ) settings.get( KEY_BLOCKING_VALUE );
 		this.featurePenalties = ( Map< String, Double > ) settings.get( KEY_SPLITTING_FEATURE_PENALTIES );
 		this.allowSplitting = ( Boolean ) settings.get( KEY_ALLOW_TRACK_SPLITTING );
+		this.maskImg = ( ImagePlus ) settings.get( KEY_MASK_IMG );
 		this.trackSegments = trackSegments;
 		this.middlePoints = middlePoints;
 	}
@@ -144,7 +150,7 @@ public class SplittingCostFunction extends MultiThreadedBenchmarkAlgorithm imple
 									continue;
 								}
 
-								final double cost = LAPUtils.computeLinkingCostFor( lStart, middle, maxDist, blockingValue, featurePenalties );
+								final double cost = LAPUtils.computeLinkingCostFor( lStart, middle, maxDist, blockingValue, featurePenalties, maskImg );
 								m.set( i, j, cost );
 							}
 						}

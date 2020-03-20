@@ -27,7 +27,10 @@ import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MERGING_FEATURE_PEN
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MERGING_MAX_DISTANCE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_SPLITTING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_SPLITTING_MAX_DISTANCE;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_MASK_IMG;
 
+
+import java.awt.Choice;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -41,6 +44,7 @@ import javax.swing.SwingConstants;
 import fiji.plugin.trackmate.gui.ConfigurationPanel;
 import fiji.plugin.trackmate.gui.panels.components.JNumericTextField;
 import fiji.util.NumberParser;
+import ij.ImagePlus;
 
 /**
  * A simplified configuration panel for the
@@ -67,6 +71,8 @@ public class SimpleLAPTrackerSettingsPanel extends ConfigurationPanel
 
 	private JNumericTextField jTextFieldLinkingDistance;
 
+	private Choice choiceMetric;
+
 	private JLabel jLabelTrackerDescription;
 
 	private final String infoText;
@@ -75,15 +81,18 @@ public class SimpleLAPTrackerSettingsPanel extends ConfigurationPanel
 
 	private final String spaceUnits;
 
+	private final ImagePlus maskImg;
+
 	/*
 	 * CONSTRUCTOR
 	 */
 
-	public SimpleLAPTrackerSettingsPanel( final String trackerName, final String infoText, final String spaceUnits )
+	public SimpleLAPTrackerSettingsPanel( final String trackerName, final String infoText, final String spaceUnits, final ImagePlus maskImg )
 	{
 		this.trackerName = trackerName;
 		this.infoText = infoText;
 		this.spaceUnits = spaceUnits;
+		this.maskImg = maskImg;
 		initGUI();
 	}
 
@@ -122,6 +131,13 @@ public class SimpleLAPTrackerSettingsPanel extends ConfigurationPanel
 		settings.put( KEY_LINKING_MAX_DISTANCE, NumberParser.parseDouble( jTextFieldLinkingDistance.getText() ) );
 		settings.put( KEY_GAP_CLOSING_MAX_DISTANCE, NumberParser.parseDouble( jTextFieldGapClosingDistanceCutoff.getText() ) );
 		settings.put( KEY_GAP_CLOSING_MAX_FRAME_GAP, NumberParser.parseInteger( jTextFieldGapClosingTimeCutoff.getText() ) );
+
+		System.out.println(choiceMetric.getSelectedItem());
+		if (choiceMetric.getSelectedItem().equals("Euclidean"))
+			settings.put( KEY_MASK_IMG,  null);
+		else
+			settings.put( KEY_MASK_IMG,  maskImg);
+
 		// Hop!
 		return settings;
 	}
@@ -189,6 +205,13 @@ public class SimpleLAPTrackerSettingsPanel extends ConfigurationPanel
 				jLabel4.setFont( FONT );
 				jLabel4.setText( "Gap-closing max frame gap:" );
 			}
+
+			{
+				final JLabel jLabel5 = new JLabel();
+				this.add( jLabel5, new GridBagConstraints( 0, 7, 1, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets( 0, 10, 0, 0 ), 0, 0 ) );
+				jLabel5.setFont( FONT );
+				jLabel5.setText( "Distance metric:" );
+			}
 			{
 				jTextFieldLinkingDistance = new JNumericTextField();
 				jTextFieldLinkingDistance.setMinimumSize( TEXTFIELD_DIMENSION );
@@ -208,8 +231,16 @@ public class SimpleLAPTrackerSettingsPanel extends ConfigurationPanel
 				jTextFieldGapClosingTimeCutoff.setFont( FONT );
 			}
 			{
+				choiceMetric = new Choice();
+				choiceMetric.add("Euclidean");
+				choiceMetric.add("Graph");
+				choiceMetric.setMinimumSize( TEXTFIELD_DIMENSION );
+				this.add( choiceMetric, new GridBagConstraints( 1, 7, 2, 1, 0.0, 0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets( 0, 0, 0, 0 ), 0, 0 ) );
+				choiceMetric.setFont( FONT );
+			}
+			{
 				jLabelLinkingMaxDistanceUnit = new JLabel();
-				this.add( jLabelLinkingMaxDistanceUnit, new GridBagConstraints( 2, 4, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 10 ), 0, 0 ) );
+				this.add( jLabelLinkingMaxDistanceUnit, new GridBagConstraints( 2, 5, 1, 1, 0.0, 0.0, GridBagConstraints.EAST, GridBagConstraints.HORIZONTAL, new Insets( 0, 0, 0, 10 ), 0, 0 ) );
 				jLabelLinkingMaxDistanceUnit.setFont( FONT );
 				jLabelLinkingMaxDistanceUnit.setText( spaceUnits );
 			}
