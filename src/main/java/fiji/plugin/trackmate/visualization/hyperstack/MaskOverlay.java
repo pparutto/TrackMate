@@ -44,6 +44,10 @@ public class MaskOverlay extends Roi
 	public void drawOverlay( final Graphics g )
 	{
 		final Graphics2D g2d = ( Graphics2D ) g;
+
+		System.out.println(String.format("AAAAAAAAAAA %d", this.model.getMaskImg().getNFrames()));
+		if (this.model.getMaskImg().getNFrames() > 1)
+			this.model.getMaskImg().setT(imp.getFrame());
 		g2d.drawImage(this.model.getMaskImg().getBufferedImage(), 1, 1, null);
 	}
 }

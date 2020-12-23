@@ -435,6 +435,9 @@ public class TrackMate implements Benchmark, MultiThreaded, Algorithm
 										int[] p = new int[] {(int) Math.floor(spot.getFeature( Spot.POSITION_X ) / calibration[ 0 ]),
 															 (int) Math.floor(spot.getFeature( Spot.POSITION_Y ) / calibration[ 1 ])};
 
+										if (settings.maskImg.getNFrames() > 1)
+											settings.maskImg.setT(frame);
+
 										if (settings.maskImg.getPixel(p[0], p[1])[0] > 0)
 											spts.add(spot);
 									}

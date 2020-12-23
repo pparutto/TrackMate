@@ -206,6 +206,8 @@ public class HyperStackDisplayer extends AbstractTrackMateModelView
 			curImg.getOverlay().add( new ImageOverlay(imp, curImg, displaySettings ) );
 			curImg.getOverlay().add( spotOverlay );
 			curImg.getOverlay().add( trackOverlay );
+
+			System.out.println("OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
 		}
 
 		if ( !curImg.isVisible() )
