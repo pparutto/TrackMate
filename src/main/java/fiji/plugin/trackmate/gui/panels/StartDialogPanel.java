@@ -334,8 +334,6 @@ public class StartDialogPanel extends ActionListenablePanel
 					for (int i = 0; i < imp.getNFrames(); ++i)
 						ims.addSlice(tmp.getProcessor());
 					maskImg.setStack(ims);
-
-					System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA");
 				}
 			}
 		});

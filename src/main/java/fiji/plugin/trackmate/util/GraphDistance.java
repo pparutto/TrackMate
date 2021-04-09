@@ -101,7 +101,6 @@ public class GraphDistance
 
 		while ( !q.isEmpty() )
 		{
-			System.out.println(q.size());
 			Node n = minDistNode(dist, q);
 			q.remove(n);
 

@@ -387,8 +387,6 @@ public class JaqamanSegmentCostMatrixCreator implements CostMatrixCreator< Spot,
 		final CostFunction< Spot, Spot > costFunction;
 		if ( null == featurePenalties || featurePenalties.isEmpty() )
 		{
-			System.out.println("ÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉÉ");
-			System.out.println(settings.get(KEY_MASK_IMG) == null);
 			if (null == settings.get(KEY_MASK_IMG))
 				costFunction = new SquareDistCostFunction();
 			else

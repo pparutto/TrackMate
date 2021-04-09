@@ -132,11 +132,10 @@ public class SimpleLAPTrackerSettingsPanel extends ConfigurationPanel
 		settings.put( KEY_GAP_CLOSING_MAX_DISTANCE, NumberParser.parseDouble( jTextFieldGapClosingDistanceCutoff.getText() ) );
 		settings.put( KEY_GAP_CLOSING_MAX_FRAME_GAP, NumberParser.parseInteger( jTextFieldGapClosingTimeCutoff.getText() ) );
 
-		System.out.println(choiceMetric.getSelectedItem());
 		if (choiceMetric.getSelectedItem().equals("Euclidean"))
-			settings.put( KEY_MASK_IMG,  null);
+			settings.put( KEY_MASK_IMG, null);
 		else
-			settings.put( KEY_MASK_IMG,  maskImg);
+			settings.put( KEY_MASK_IMG, maskImg);
 
 		// Hop!
 		return settings;

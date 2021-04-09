@@ -185,18 +185,16 @@ public class LAPUtils {
 			final double distanceCutOff, final double blockingValue, final Map<String, Double> featurePenalties,
 			final ImagePlus mask) {
 
-		System.out.println("YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO");
 		double d2 = 0.0;
 		if ( null == mask )
 			d2 = s0.squareDistanceTo(s1);
-		else
+		else if (false)
 		{
 			d2 = GraphDistance.dijkstra(mask,
 										new int[] { (int) Math.floor( s0.getFeature( Spot.POSITION_X ) ),
 					 							    (int) Math.floor( s0.getFeature( Spot.POSITION_Y ) ) },
 										new int[] { (int) Math.floor( s1.getFeature( Spot.POSITION_X ) ),
 					 							    (int) Math.floor( s1.getFeature( Spot.POSITION_Y ) ) } );
-			System.out.println("AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAApédletépdle");
 		}
 
 		// Distance threshold
