@@ -191,6 +191,93 @@ public class DetectionUtils
 	 * radius specified <b>using calibrated units</b>. The specified calibration
 	 * is used to determine the dimensionality of the kernel and to map it on a
 	 * pixel grid.
+	 * <p>
+	 * With this version of the method, the kernel has a different <b>physical
+	 * size</b> in X and Y, versus Z, specified by <code>radiusXY</code> and
+	 * <code>radiusZ</code> parameters. If the source image has less than 3
+	 * dimensions, the <code>radiusZ</code> is ignored.
+	 * 
+	 * @param radiusXY
+	 *            the blob radius in X and Y (in image unit).
+	 * @param radiusZ
+	 *            the blob radius in Z (in image unit).
+	 * @param nDims
+	 *            the dimensionality of the desired kernel. Must be 1, 2 or 3.
+	 * @param calibration
+	 *            the pixel sizes, specified as <code>double[]</code> array.
+	 * @return a new image containing the LoG kernel.
+	 */
+	public static final Img< FloatType > createLoGKernel( final double radiusXY, final double radiusZ, final int nDims, final double[] calibration )
+	{
+		// Optimal sigma for LoG approach and dimensionality.
+		final double sigmaXY = radiusXY / Math.sqrt( nDims );
+		final double sigmaZ = radiusZ / Math.sqrt( nDims );
+		final double[] sigmaPixels = new double[ nDims ];
+		final double[] sigmas = new double[ nDims ];
+		for ( int d = 0; d < 2; d++ )
+		{
+			sigmaPixels[ d ] = sigmaXY / calibration[ d ];
+			sigmas[ d ] = sigmaXY;
+		}
+		for ( int d = 2; d < sigmaPixels.length; d++ )
+		{
+			sigmaPixels[ d ] = sigmaZ / calibration[ d ];
+			sigmas[ d ] = sigmaZ;
+		}
+
+		final long[] sizes = new long[ nDims ];
+		final long[] middle = new long[ nDims ];
+		for ( int d = 0; d < nDims; ++d )
+		{
+			// From Tobias Gauss3
+			final int hksizes = Math.max( 2, ( int ) ( 3 * sigmaPixels[ d ] + 0.5 ) + 1 );
+			sizes[ d ] = 3 + 2 * hksizes;
+			middle[ d ] = 1 + hksizes;
+		}
+		final ArrayImg< FloatType, FloatArray > kernel = ArrayImgs.floats( sizes );
+
+		/*
+		 * LoG normalization factor, so that the filtered peak have the maximal
+		 * value for spots that have the size this kernel is tuned to. With this
+		 * value, the peak value will be of the same order of magnitude than the
+		 * raw spot (if it has the right size). This value also ensures that if
+		 * the image has its calibration changed, one will retrieve the same
+		 * peak value than before scaling. However, I (JYT) could not derive the
+		 * exact formula if the image is scaled differently across X, Y and Z.
+		 */
+		final double C = 1. / Math.PI / sigmaPixels[ 0 ] / sigmaPixels[ 0 ];
+
+		final ArrayCursor< FloatType > c = kernel.cursor();
+		final long[] coords = new long[ nDims ];
+		while ( c.hasNext() )
+		{
+			c.fwd();
+			c.localize( coords );
+
+			double mantissa = 0.;
+			double exponent = 0.;
+			for ( int d = 0; d < coords.length; d++ )
+			{
+				// Work in image coordinates
+				final double x = calibration[ d ] * ( coords[ d ] - middle[ d ] );
+				exponent += ( x * x / 2. / sigmas[ d ] / sigmas[ d ] );
+				mantissa += 1. / sigmas[ d ] / sigmas[ d ] * ( x * x / sigmas[ d ] / sigmas[ d ] - 1 );
+			}
+			c.get().setReal( -C * mantissa * Math.exp( -exponent ) );
+		}
+
+		return kernel;
+	}
+
+	/**
+	 * Creates a laplacian of gaussian (LoG) kernel tuned for blobs with a
+	 * radius specified <b>using calibrated units</b>. The specified calibration
+	 * is used to determine the dimensionality of the kernel and to map it on a
+	 * pixel grid.
+	 * <p>
+	 * With this version of the method, the kernel has the same <b>physical
+	 * size</b> in all dimensions, specified by the <code>radius</code>
+	 * parameter.
 	 * 
 	 * @param radius
 	 *            the blob radius (in image unit).
@@ -202,62 +289,7 @@ public class DetectionUtils
 	 */
 	public static final Img< FloatType > createLoGKernel( final double radius, final int nDims, final double[] calibration )
 	{
-		// Optimal sigma for LoG approach and dimensionality.
-		final double sigma = radius / Math.sqrt( nDims );
-		final double[] sigmaPixels = new double[ nDims ];
-		for ( int i = 0; i < sigmaPixels.length; i++ )
-		{
-			sigmaPixels[ i ] = sigma / calibration[ i ];
-		}
-
-		final int n = sigmaPixels.length;
-		final long[] sizes = new long[ n ];
-		final long[] middle = new long[ n ];
-		for ( int d = 0; d < n; ++d )
-		{
-			// From Tobias Gauss3
-			final int hksizes = Math.max( 2, ( int ) ( 3 * sigmaPixels[ d ] + 0.5 ) + 1 );
-			sizes[ d ] = 3 + 2 * hksizes;
-			middle[ d ] = 1 + hksizes;
-
-		}
-		final ArrayImg< FloatType, FloatArray > kernel = ArrayImgs.floats( sizes );
-
-		final ArrayCursor< FloatType > c = kernel.cursor();
-		final long[] coords = new long[ nDims ];
-
-		// Work in image coordinates
-		while ( c.hasNext() )
-		{
-			c.fwd();
-			c.localize( coords );
-
-			double sumx2 = 0.;
-			double mantissa = 0.;
-			for ( int d = 0; d < coords.length; d++ )
-			{
-				final double x = calibration[ d ] * ( coords[ d ] - middle[ d ] );
-				sumx2 += ( x * x );
-				mantissa += 1. / sigmaPixels[ d ] / sigmaPixels[ d ] * ( x * x / sigma / sigma - 1 );
-			}
-			final double exponent = -sumx2 / 2. / sigma / sigma;
-
-			/*
-			 * LoG normalization factor, so that the filtered peak have the
-			 * maximal value for spots that have the size this kernel is tuned
-			 * to. With this value, the peak value will be of the same order of
-			 * magnitude than the raw spot (if it has the right size). This
-			 * value also ensures that if the image has its calibration changed,
-			 * one will retrieve the same peak value than before scaling.
-			 * However, I (JYT) could not derive the exact formula if the image
-			 * is scaled differently across X, Y and Z.
-			 */
-			final double C = 1. / Math.PI / sigmaPixels[ 0 ] / sigmaPixels[ 0 ];
-
-			c.get().setReal( -C * mantissa * Math.exp( exponent ) );
-		}
-
-		return kernel;
+		return createLoGKernel( radius, radius, nDims, calibration );
 	}
 
 	/**
