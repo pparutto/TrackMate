@@ -25,6 +25,7 @@ import java.util.Map;
 
 import org.jdom2.Element;
 
+import fiji.plugin.trackmate.FeatureModel;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.TrackMateModule;
@@ -150,4 +151,14 @@ public interface SpotDetectorFactoryBase< T extends RealType< T > & NativeType< 
 	 * @return a new instance of this detector factory.
 	 */
 	public SpotDetectorFactoryBase< T > copy();
+
+	/**
+	 * Optionally declares the features this detector will add to the feature
+	 * model. By default this method does not do anything.
+	 * 
+	 * @param featureModel
+	 *            the feature model to which to declare supplemental features.
+	 */
+	public default void declareFeatures( final FeatureModel featureModel )
+	{}
 }

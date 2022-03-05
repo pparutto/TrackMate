@@ -349,6 +349,8 @@ public class TrackMate implements Benchmark, MultiThreaded, Algorithm, Named, Ca
 			return true;
 		}
 
+		factory.declareFeatures( model.getFeatureModel() );
+
 		/*
 		 * Prepare interval
 		 */
