@@ -22,6 +22,7 @@
 package fiji.plugin.trackmate.detection;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
@@ -44,6 +45,7 @@ import net.imagej.axis.Axes;
 import net.imglib2.Cursor;
 import net.imglib2.FinalInterval;
 import net.imglib2.Interval;
+import net.imglib2.Localizable;
 import net.imglib2.Point;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
@@ -104,8 +106,7 @@ public class DetectionUtils
 			final Map< String, Object > detectorSettings,
 			final int frame,
 			final Logger logger,
-			final Consumer< Boolean > buttonEnabler
-			)
+			final Consumer< Boolean > buttonEnabler )
 	{
 		buttonEnabler.accept( false );
 		new Thread( "TrackMate preview detection thread" )
@@ -293,6 +294,146 @@ public class DetectionUtils
 	}
 
 	/**
+	 * Returns a metric that quantifies how spherical the detection represented
+	 * by the specified eignenvalues is. This metric is high when the detection
+	 * corresponds to a spherical blob, and low when it corresponds to a line or
+	 * a plane.
+	 * 
+	 * @param evs
+	 *            the eigenvalue array. Is modified.
+	 * @return a positive metric.
+	 */
+	public static final double computeBlobStrength( final double[] evs )
+	{
+		for ( int i = 0; i < evs.length; i++ )
+			evs[ i ] = Math.abs( evs[ i ] );
+		Arrays.sort( evs );
+		return evs[ 0 ] / evs[ evs.length - 1 ];
+	}
+
+	/**
+	 * Computes the eigenvalues of the Hessian matrix at the specified location
+	 * in the input image.
+	 * 
+	 * @param ra
+	 *            a {@link RandomAccess} on the source image. Must be accessible
+	 *            out of bounds by a border of 1 pixel extra.
+	 * @param pos
+	 *            the location at which to compute the Hessian.
+	 * @param calibration
+	 *            the physical pixel size.
+	 * @param evs
+	 *            a double array to store the eigenvalues.
+	 */
+	public static final void hessianEigenvalues( final RandomAccess< FloatType > ra, final Localizable pos, final double[] calibration, final double[] evs )
+	{
+		final int n = ra.numDimensions();
+		// Number of elements in the triangular matrix.
+		final int nelements = n * ( n + 1 ) / 2;
+		final double[] H = new double[ nelements ];
+
+		/*
+		 * Compute Hessian matrix. Plain central difference for gradients.
+		 */
+		ra.setPosition( pos );
+		int i = 0;
+		for ( int d2 = 0; d2 < n; d2++ )
+		{
+			for ( int d1 = d2; d1 < n; d1++ )
+			{
+				final double ddy;
+				if ( d1 == d2 )
+				{
+					final double y0 = ra.get().getRealDouble();
+					ra.bck( d1 );
+					final double ym = ra.get().getRealDouble();
+					ra.fwd( d1 );
+					ra.fwd( d1 );
+					final double yp = ra.get().getRealDouble();
+					ddy = ( yp - 2. * y0 + ym ) / ( calibration[ d1 ] * calibration[ d1 ] );
+					ra.bck( d1 );
+				}
+				else
+				{
+					ra.bck( d1 );
+					final double dym = dy( ra, d2, calibration[ d2 ] );
+					ra.fwd( d1 );
+					ra.fwd( d1 );
+					final double dyp = dy( ra, d2, calibration[ d2 ] );
+					ddy = ( dyp - dym ) / ( 2. * calibration[ d1 ] );
+					ra.bck( d1 );
+				}
+				H[ i++ ] = ddy;
+			}
+		}
+
+		/*
+		 * Compute eigenvalues.
+		 */
+		if ( n == 2 )
+		{
+			final double a00 = H[ 0 ];
+			final double a01 = H[ 1 ];
+			final double a11 = H[ 2 ];
+			final double sum = a00 + a11;
+			final double diff = a00 - a11;
+			final double sqrt = Math.sqrt( 4 * a01 * a01 + diff * diff );
+			evs[ 0 ] = 0.5 * ( sum + sqrt );
+			evs[ 1 ] = 0.5 * ( sum - sqrt );
+		}
+		else
+		{
+			getEigenvaluesSymmetric33( H, evs );
+		}
+	}
+
+	/*
+	 * Adapted from JTK Eigen.java class, by Dave Hale.
+	 */
+	private static void getEigenvaluesSymmetric33( final double[] H, final double[] d )
+	{
+		final double a00 = H[ 0 ];
+		final double a01 = H[ 1 ];
+		final double a02 = H[ 2 ];
+		final double a11 = H[ 3 ];
+		final double a12 = H[ 4 ];
+		final double a22 = H[ 5 ];
+
+		final double de = a01 * a12;
+		final double dd = a01 * a01;
+		final double ee = a12 * a12;
+		final double ff = a02 * a02;
+		final double c2 = a00 + a11 + a22;
+		final double c1 = ( a00 * a11 + a00 * a22 + a11 * a22 ) - ( dd + ee + ff );
+		final double c0 = a22 * dd + a00 * ee + a11 * ff - a00 * a11 * a22 - 2.0 * a02 * de;
+		final double p = c2 * c2 - 3.0 * c1;
+		final double q = c2 * ( p - 1.5 * c1 ) - 13.5 * c0; // 13.5 = 27/2
+		final double t = 27.0 * ( 0.25 * c1 * c1 * ( p - c1 ) + c0 * ( q + 6.75 * c0 ) );
+		// 6.75 = 27/4
+		final double phi = 1. / 3. * Math.atan2( Math.sqrt( Math.abs( t ) ), q );
+		final double sqrtp = Math.sqrt( Math.abs( p ) );
+		final double c = sqrtp * Math.cos( phi );
+		final double s = 1. / Math.sqrt( 3. ) * sqrtp * Math.sin( phi );
+		final double dt = 1. / 3. * ( c2 - c );
+		d[ 0 ] = dt + c;
+		d[ 1 ] = dt + s;
+		d[ 2 ] = dt - s;
+	}
+
+	// Plain central difference.
+	private static final double dy( final RandomAccess< FloatType > ra, final int d, final double dx )
+	{
+		ra.bck( d );
+		final double ym = ra.get().getRealDouble();
+		ra.fwd( d );
+		ra.fwd( d );
+		final double yp = ra.get().getRealDouble();
+		final double dy = ( yp - ym ) / ( 2. * dx );
+		ra.bck( d );
+		return dy;
+	}
+
+	/**
 	 * Copy an interval of the specified source image on a float image.
 	 *
 	 * @param img
@@ -311,7 +452,7 @@ public class DetectionUtils
 		final RandomAccess< T > in = Views.zeroMin( Views.interval( img, interval ) ).randomAccess();
 		final Cursor< FloatType > out = output.cursor();
 		final RealFloatConverter< T > c = new RealFloatConverter<>();
-		
+
 		while ( out.hasNext() )
 		{
 			out.fwd();
