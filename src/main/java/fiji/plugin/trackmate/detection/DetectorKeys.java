@@ -69,6 +69,15 @@ public class DetectorKeys
 	public static final double DEFAULT_RADIUS = 5d;
 
 	/**
+	 * The key for the parameter that sets the target radius in the Z direction
+	 * for the detector. Expected values are {@link Double}s.
+	 */
+	public static final String KEY_RADIUS_Z = "RADIUS_Z";
+
+	/** A default value for the {@link #KEY_RADIUS_Z} parameter. */
+	public static final double DEFAULT_RADIUS_Z = 8.;
+
+	/**
 	 * The key identifying the parameter that sets the threshold for the LoG
 	 * detector. Spot found with a filtered value lowered than this threshold
 	 * will not be retained. Expected values are {@link Double}s.
@@ -83,6 +92,17 @@ public class DetectorKeys
 
 	/** A default value for the {@link #KEY_THRESHOLD} parameter. */
 	public static final double DEFAULT_THRESHOLD = 0d;
+
+	/**
+	 * Key to the parameter that sets the threshold on the blob ratio feature
+	 * for spot detection. This feature is positive and is high for detection
+	 * that resembles a spherical blob, and low for detections that resemble a
+	 * line or a plane. Expected values are {@link Double}s.
+	 */
+	public static final String KEY_THRESHOLD_BLOB_RATIO = "THRESHOLD_BLOB_RATIO";
+
+	/** A default value for the {@link #KEY_THRESHOLD_BLOB_RATIO} parameter. */
+	public static final double DEFAULT_THRESHOLD_BLOB_RATIO = 0d;
 
 	/**
 	 * The key identifying the parameter that sets the downsampling factor

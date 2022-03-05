@@ -27,14 +27,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import fiji.plugin.trackmate.Spot;
-import ij.plugin.Duplicator;
 import net.imglib2.Interval;
+import net.imglib2.Point;
+import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessible;
 import net.imglib2.algorithm.MultiThreaded;
 import net.imglib2.algorithm.fft2.FFTConvolution;
 import net.imglib2.img.Img;
 import net.imglib2.img.ImgFactory;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.complex.ComplexFloatType;
@@ -53,6 +53,8 @@ public class AdvancedLogDetector< T extends RealType< T > & NativeType< T >> imp
 
 	private final static String BASE_ERROR_MESSAGE = "AdvancedLogDetector: ";
 
+	public static final String BLOB_RATIO = "BLOB_RATIO";
+
 	protected String baseErrorMessage;
 
 	protected final RandomAccessible< T > img;
@@ -65,7 +67,7 @@ public class AdvancedLogDetector< T extends RealType< T > & NativeType< T >> imp
 
 	protected final double thresholdQuality;
 
-	protected final double thresholdEdgeElimination;
+	protected final double thresholdBlobRatio;
 
 	protected final boolean doSubPixelLocalization;
 
@@ -95,7 +97,7 @@ public class AdvancedLogDetector< T extends RealType< T > & NativeType< T >> imp
 			final double radiusXY,
 			final double radiusZ,
 			final double thresholdQuality,
-			final double thresholdEdgeElimination,
+			final double thresholdBlobRatio,
 			final boolean doSubPixelLocalization,
 			final boolean doMedianFilter )
 	{
@@ -105,7 +107,7 @@ public class AdvancedLogDetector< T extends RealType< T > & NativeType< T >> imp
 		this.radiusXY = radiusXY;
 		this.radiusZ = radiusZ;
 		this.thresholdQuality = thresholdQuality;
-		this.thresholdEdgeElimination = thresholdEdgeElimination;
+		this.thresholdBlobRatio = thresholdBlobRatio;
 		this.doSubPixelLocalization = doSubPixelLocalization;
 		this.doMedianFilter = doMedianFilter;
 		this.baseErrorMessage = BASE_ERROR_MESSAGE;
@@ -138,17 +140,11 @@ public class AdvancedLogDetector< T extends RealType< T > & NativeType< T >> imp
 		final long start = System.currentTimeMillis();
 		spots.clear();
 
-		/*
-		 * Copy to float for convolution.
-		 */
-
+		// Copy to float for convolution.
 		final ImgFactory< FloatType > factory = Util.getArrayOrCellImgFactory( interval, new FloatType() );
 		Img< FloatType > floatImg = DetectionUtils.copyToFloatImg( img, interval, factory );
 
-		/*
-		 * Do median filtering (or not).
-		 */
-
+		// Do median filtering (or not).
 		if ( doMedianFilter )
 		{
 			floatImg = DetectionUtils.applyMedianFilter( floatImg );
@@ -158,7 +154,6 @@ public class AdvancedLogDetector< T extends RealType< T > & NativeType< T >> imp
 				return false;
 			}
 		}
-
 
 		// Squeeze singleton dimensions
 		int ndims = interval.numDimensions();
@@ -188,10 +183,22 @@ public class AdvancedLogDetector< T extends RealType< T > & NativeType< T >> imp
 		final IntervalView< FloatType > to = Views.translate( floatImg, minopposite );
 		final List< Spot > lm = DetectionUtils.findLocalMaxima( to, thresholdQuality, calibration, radiusXY, doSubPixelLocalization, numThreads );
 
-		ImageJFunctions.show( kernel, "Kernel" ); // DEBUG
-		new Duplicator().run( ImageJFunctions.wrap( to, "Filtered rXY " + radiusXY + " rZ=" + radiusZ ) ).show(); // DEBUG
+		// Compute blob strength and filter spots on it.
+		final Point pos = new Point( img.numDimensions() );
+		final double[] evs = new double[ img.numDimensions() ];
+		final RandomAccess< FloatType > ra = Views.extendMirrorDouble( to ).randomAccess();
+		for ( final Spot spot : lm )
+		{
+			for ( int d = 0; d < img.numDimensions(); d++ )
+				pos.setPosition( Math.round( spot.getDoublePosition( d ) / calibration[ d ] ), d );
+			DetectionUtils.hessianEigenvalues( ra, pos, calibration, evs );
+			final double blobRatio = DetectionUtils.computeBlobStrength( evs );
+			if ( blobRatio < thresholdBlobRatio )
+				continue;
 
-		spots.addAll( lm ); // TODO
+			spot.putFeature( BLOB_RATIO, blobRatio );
+			spots.add( spot );
+		}
 
 		final long end = System.currentTimeMillis();
 		this.processingTime = end - start;
