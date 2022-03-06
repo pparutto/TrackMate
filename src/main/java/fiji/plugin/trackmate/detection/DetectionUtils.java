@@ -330,40 +330,39 @@ public class DetectionUtils
 		final int n = ra.numDimensions();
 		// Number of elements in the triangular matrix.
 		final int nelements = n * ( n + 1 ) / 2;
-		final double[] H = new double[ nelements ];
+		final double[][] H = new double[ nelements ][ nelements ];
 
 		/*
 		 * Compute Hessian matrix. Plain central difference for gradients.
 		 */
 		ra.setPosition( pos );
-		int i = 0;
-		for ( int d2 = 0; d2 < n; d2++ )
+		for ( int row = 0; row < n; row++ )
 		{
-			for ( int d1 = d2; d1 < n; d1++ )
+			for ( int col = row; col < n; col++ )
 			{
 				final double ddy;
-				if ( d1 == d2 )
+				if ( col == row )
 				{
 					final double y0 = ra.get().getRealDouble();
-					ra.bck( d1 );
+					ra.bck( col );
 					final double ym = ra.get().getRealDouble();
-					ra.fwd( d1 );
-					ra.fwd( d1 );
+					ra.fwd( col );
+					ra.fwd( col );
 					final double yp = ra.get().getRealDouble();
-					ddy = ( yp - 2. * y0 + ym ) / ( calibration[ d1 ] * calibration[ d1 ] );
-					ra.bck( d1 );
+					ddy = ( yp - 2. * y0 + ym ) / ( calibration[ col ] * calibration[ col ] );
+					ra.bck( col );
 				}
 				else
 				{
-					ra.bck( d1 );
-					final double dym = dy( ra, d2, calibration[ d2 ] );
-					ra.fwd( d1 );
-					ra.fwd( d1 );
-					final double dyp = dy( ra, d2, calibration[ d2 ] );
-					ddy = ( dyp - dym ) / ( 2. * calibration[ d1 ] );
-					ra.bck( d1 );
+					ra.bck( col );
+					final double dym = dy( ra, row, calibration[ row ] );
+					ra.fwd( col );
+					ra.fwd( col );
+					final double dyp = dy( ra, row, calibration[ row ] );
+					ddy = ( dyp - dym ) / ( 2. * calibration[ col ] );
+					ra.bck( col );
 				}
-				H[ i++ ] = ddy;
+				H[ row ][ col ] = ddy;
 			}
 		}
 
@@ -372,9 +371,9 @@ public class DetectionUtils
 		 */
 		if ( n == 2 )
 		{
-			final double a00 = H[ 0 ];
-			final double a01 = H[ 1 ];
-			final double a11 = H[ 2 ];
+			final double a00 = H[ 0 ][ 0 ];
+			final double a01 = H[ 0 ][ 1 ];
+			final double a11 = H[ 1 ][ 1 ];
 			final double sum = a00 + a11;
 			final double diff = a00 - a11;
 			final double sqrt = Math.sqrt( 4 * a01 * a01 + diff * diff );
@@ -383,41 +382,12 @@ public class DetectionUtils
 		}
 		else
 		{
-			getEigenvaluesSymmetric33( H, evs );
+			final JamaEigenvalueDecomposition eig = new JamaEigenvalueDecomposition( n, false );
+			eig.decomposeSymmetric( H );
+			final double[] d = eig.getRealEigenvalues();
+			for ( int i = 0; i < d.length; i++ )
+				evs[ i ] = d[ i ];
 		}
-	}
-
-	/*
-	 * Adapted from JTK Eigen.java class, by Dave Hale.
-	 */
-	private static void getEigenvaluesSymmetric33( final double[] H, final double[] d )
-	{
-		final double a00 = H[ 0 ];
-		final double a01 = H[ 1 ];
-		final double a02 = H[ 2 ];
-		final double a11 = H[ 3 ];
-		final double a12 = H[ 4 ];
-		final double a22 = H[ 5 ];
-
-		final double de = a01 * a12;
-		final double dd = a01 * a01;
-		final double ee = a12 * a12;
-		final double ff = a02 * a02;
-		final double c2 = a00 + a11 + a22;
-		final double c1 = ( a00 * a11 + a00 * a22 + a11 * a22 ) - ( dd + ee + ff );
-		final double c0 = a22 * dd + a00 * ee + a11 * ff - a00 * a11 * a22 - 2.0 * a02 * de;
-		final double p = c2 * c2 - 3.0 * c1;
-		final double q = c2 * ( p - 1.5 * c1 ) - 13.5 * c0; // 13.5 = 27/2
-		final double t = 27.0 * ( 0.25 * c1 * c1 * ( p - c1 ) + c0 * ( q + 6.75 * c0 ) );
-		// 6.75 = 27/4
-		final double phi = 1. / 3. * Math.atan2( Math.sqrt( Math.abs( t ) ), q );
-		final double sqrtp = Math.sqrt( Math.abs( p ) );
-		final double c = sqrtp * Math.cos( phi );
-		final double s = 1. / Math.sqrt( 3. ) * sqrtp * Math.sin( phi );
-		final double dt = 1. / 3. * ( c2 - c );
-		d[ 0 ] = dt + c;
-		d[ 1 ] = dt + s;
-		d[ 2 ] = dt - s;
 	}
 
 	// Plain central difference.
