@@ -7,6 +7,7 @@ import javax.swing.JFrame;
 import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.SelectionModel;
+import fiji.plugin.trackmate.gui.GuiUtils;
 import fiji.plugin.trackmate.gui.Icons;
 import net.imagej.ImgPlus;
 import net.imagej.axis.Axes;
@@ -25,10 +26,13 @@ public class CloseGapsController
 
 	private final Logger logger;
 
+	private final ImgPlus< ? > img;
+
 	public CloseGapsController( final Model model, final SelectionModel selectionModel, final ImgPlus< ? > img, final String units, final Logger logger )
 	{
 		this.model = model;
 		this.selectionModel = selectionModel;
+		this.img = img;
 		this.logger = logger;
 		final int nChannels = ( int ) ( img.dimensionIndex( Axes.CHANNEL ) < 0
 				? 1
@@ -42,14 +46,15 @@ public class CloseGapsController
 		final JFrame frame = new JFrame( "Close track gaps" );
 		frame.setIconImage( Icons.TRACKMATE_ICON.getImage() );
 		frame.getContentPane().add( gui );
-		frame.setSize( 340, 550 );
-		frame.setLocationRelativeTo( parent );
+		frame.setSize( 340, 650 );
+		GuiUtils.positionWindow( frame, parent );
 		frame.setVisible( true );
 	}
 
+	@SuppressWarnings( { "unchecked", "rawtypes" } )
 	private void execute( final CloseGapsParams params )
 	{
 		CloseGapsController.params = params;
-		CloseTrackGaps.run( model, selectionModel, params, logger );
+		CloseTrackGaps.run( model, selectionModel, ( ImgPlus ) img, params, logger );
 	}
 }
