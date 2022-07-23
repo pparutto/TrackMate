@@ -5,6 +5,8 @@ public class CloseGapsModel
 
 	public final Method method;
 
+	public final double searchRadius;
+
 	public final boolean logAutoRadius;
 
 	public final double logRadius;
@@ -18,6 +20,7 @@ public class CloseGapsModel
 	public final boolean selectionOnly;
 
 	private CloseGapsModel( final Method method,
+			final double searchRadius,
 			final boolean logAutoRadius,
 			final double logRadius,
 			final boolean hessianAutoRadius,
@@ -26,6 +29,7 @@ public class CloseGapsModel
 			final boolean selectionOnly )
 	{
 		this.method = method;
+		this.searchRadius = searchRadius;
 		this.logAutoRadius = logAutoRadius;
 		this.logRadius = logRadius;
 		this.hessianAutoRadius = hessianAutoRadius;
@@ -45,6 +49,8 @@ public class CloseGapsModel
 		private Method method = Method.LINEAR_INTERPOLATION;
 
 		private boolean logAutoRadius = true;
+		
+		private double searchRadius = 4.;
 
 		private double logRadius = 2.5;
 
@@ -59,6 +65,12 @@ public class CloseGapsModel
 		public Builder method( final Method method )
 		{
 			this.method = method;
+			return this;
+		}
+
+		public Builder searchRadius( final double searchRadius )
+		{
+			this.searchRadius = searchRadius;
 			return this;
 		}
 
@@ -102,6 +114,7 @@ public class CloseGapsModel
 		{
 			return new CloseGapsModel(
 					method,
+					searchRadius,
 					logAutoRadius,
 					logRadius,
 					hessianAutoRadius,
