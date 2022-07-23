@@ -56,7 +56,7 @@ public class CloseGapsParams
 
 		private boolean logAutoRadius = true;
 		
-		private double searchRadius = 4.;
+		private double searchRadius = 2.;
 
 		private int sourceChannel = 0; // 0-based
 
