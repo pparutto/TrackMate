@@ -40,7 +40,7 @@ public class CloseGapsAction extends AbstractTMAction
 	{
 		final Model model = trackmate.getModel();
 		final String units = model.getSpaceUnits();
-		new CloseGapsController( model, selectionModel, units ).show( parent );
+		new CloseGapsController( model, selectionModel, units, logger ).show( parent );
 	}
 
 	@Plugin( type = TrackMateActionFactory.class )

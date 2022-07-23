@@ -4,6 +4,7 @@ import java.awt.Frame;
 
 import javax.swing.JFrame;
 
+import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.SelectionModel;
 import fiji.plugin.trackmate.gui.Icons;
@@ -12,7 +13,7 @@ public class CloseGapsController
 {
 
 	// Default values, stored for this session.
-	private static CloseGapsModel params = CloseGapsModel.create().get();
+	private static CloseGapsParams params = CloseGapsParams.create().get();
 
 	private final CloseGapsPanel gui;
 
@@ -20,10 +21,13 @@ public class CloseGapsController
 
 	private final SelectionModel selectionModel;
 
-	public CloseGapsController( final Model model, final SelectionModel selectionModel, final String units )
+	private final Logger logger;
+
+	public CloseGapsController( final Model model, final SelectionModel selectionModel, final String units, final Logger logger )
 	{
 		this.model = model;
 		this.selectionModel = selectionModel;
+		this.logger = logger;
 		this.gui = new CloseGapsPanel( params, units );
 		gui.btnGo.addActionListener( e -> execute( gui.getParams() ) );
 	}
@@ -38,9 +42,9 @@ public class CloseGapsController
 		frame.setVisible( true );
 	}
 
-	private void execute( final CloseGapsModel params )
+	private void execute( final CloseGapsParams params )
 	{
 		CloseGapsController.params = params;
-		CloseTrackGaps.run( model, selectionModel, params );
+		CloseTrackGaps.run( model, selectionModel, params, logger );
 	}
 }

@@ -1,6 +1,6 @@
 package fiji.plugin.trackmate.action.closegaps;
 
-public class CloseGapsModel
+public class CloseGapsParams
 {
 
 	public final Method method;
@@ -19,7 +19,7 @@ public class CloseGapsModel
 
 	public final boolean selectionOnly;
 
-	private CloseGapsModel( final Method method,
+	private CloseGapsParams( final Method method,
 			final double searchRadius,
 			final boolean logAutoRadius,
 			final double logRadius,
@@ -110,9 +110,9 @@ public class CloseGapsModel
 			return this;
 		}
 
-		public CloseGapsModel get()
+		public CloseGapsParams get()
 		{
-			return new CloseGapsModel(
+			return new CloseGapsParams(
 					method,
 					searchRadius,
 					logAutoRadius,

@@ -16,7 +16,7 @@ import net.imglib2.RealPoint;
 public class CloseTrackGaps
 {
 
-	public static void run( final Model model, final SelectionModel selectionModel, final CloseGapsModel params, final Logger logger )
+	public static void run( final Model model, final SelectionModel selectionModel, final CloseGapsParams params, final Logger logger )
 	{
 		final Set< DefaultWeightedEdge > edges;
 		if ( params.selectionOnly )
@@ -27,7 +27,7 @@ public class CloseTrackGaps
 		run( edges, model, params, logger );
 	}
 
-	public static void run( final Collection< DefaultWeightedEdge > edges, final Model model, final CloseGapsModel params, final Logger logger )
+	public static void run( final Collection< DefaultWeightedEdge > edges, final Model model, final CloseGapsParams params, final Logger logger )
 	{
 		logger.log( "Interpolating gaps.\n" );
 		model.beginUpdate();
@@ -131,13 +131,13 @@ public class CloseTrackGaps
 		logger.log( "Finished.\n" );
 	}
 
-	private static void searchSpotLoG( final Spot newSpot, final double radius )
+	private static void searchSpotLoG( final Spot spot, final double radius )
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	private static void searchSpotHessian( final Spot newSpot, final double radiusXY, final double radiusZ )
+	private static void searchSpotHessian( final Spot spot, final double radiusXY, final double radiusZ )
 	{
 		// TODO Auto-generated method stub
 

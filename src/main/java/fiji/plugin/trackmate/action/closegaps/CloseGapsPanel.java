@@ -23,7 +23,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
 import javax.swing.SwingConstants;
 
-import fiji.plugin.trackmate.action.closegaps.CloseGapsModel.Method;
+import fiji.plugin.trackmate.action.closegaps.CloseGapsParams.Method;
 import fiji.plugin.trackmate.gui.Icons;
 
 public class CloseGapsPanel extends JPanel
@@ -65,7 +65,7 @@ public class CloseGapsPanel extends JPanel
 
 	private final JLabel lblSearchRadiusUnits;
 
-	public CloseGapsPanel( final CloseGapsModel model, final String units )
+	public CloseGapsPanel( final CloseGapsParams model, final String units )
 	{
 		final GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
@@ -403,7 +403,7 @@ public class CloseGapsPanel extends JPanel
 		hessianItemsVisibilityListener.itemStateChanged( null );
 	}
 
-	public CloseGapsModel getParams()
+	public CloseGapsParams getParams()
 	{
 		final Method method = rdbtnLinearInterpolation.isSelected()
 				? Method.LINEAR_INTERPOLATION
@@ -411,7 +411,7 @@ public class CloseGapsPanel extends JPanel
 						? Method.LOG_DETECTOR
 						: Method.HESSIAN_DETECTOR;
 
-		return CloseGapsModel.create()
+		return CloseGapsParams.create()
 				.method( method )
 				.searchRadius( ( ( Number ) ftfSearchRadius.getValue() ).doubleValue() * 2. )
 				.logAutoRadius( rdbtnLoGAutoDiameter.isSelected() )
