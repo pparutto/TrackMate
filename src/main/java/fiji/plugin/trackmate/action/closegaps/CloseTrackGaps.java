@@ -83,6 +83,7 @@ public class CloseTrackGaps
 						interpolateFeature( newSpot, currentSpot, nextSpot, weight, Spot.POSITION_T );
 
 						// Refine position.
+						final double searchRadius = Math.max( params.searchRadius, 1. );
 						switch ( params.method )
 						{
 						case LINEAR_INTERPOLATION:
@@ -93,7 +94,7 @@ public class CloseTrackGaps
 							final double radius = params.logAutoRadius
 									? newSpot.getFeature( Spot.RADIUS ).doubleValue()
 									: params.logRadius;
-							searchSpotLoG( newSpot, radius );
+							searchSpotLoG( newSpot, radius, searchRadius );
 							break;
 						}
 						case HESSIAN_DETECTOR:
@@ -104,7 +105,7 @@ public class CloseTrackGaps
 							final double radiusZ = params.hessianAutoRadius
 									? newSpot.getFeature( Spot.RADIUS ).doubleValue()
 									: params.hessianRadiusZ;
-							searchSpotHessian( newSpot, radiusXY, radiusZ );
+							searchSpotHessian( newSpot, radiusXY, radiusZ, searchRadius );
 							break;
 						}
 						default:
@@ -131,13 +132,13 @@ public class CloseTrackGaps
 		logger.log( "Finished.\n" );
 	}
 
-	private static void searchSpotLoG( final Spot spot, final double radius )
+	private static void searchSpotLoG( final Spot spot, final double radius, final double searchRadius )
 	{
 		// TODO Auto-generated method stub
 
 	}
 
-	private static void searchSpotHessian( final Spot spot, final double radiusXY, final double radiusZ )
+	private static void searchSpotHessian( final Spot spot, final double radiusXY, final double radiusZ, final double searchRadius )
 	{
 		// TODO Auto-generated method stub
 

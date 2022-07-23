@@ -21,9 +21,11 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSeparator;
+import javax.swing.JSlider;
 import javax.swing.SwingConstants;
 
 import fiji.plugin.trackmate.action.closegaps.CloseGapsParams.Method;
+import fiji.plugin.trackmate.gui.GuiUtils;
 import fiji.plugin.trackmate.gui.Icons;
 
 public class CloseGapsPanel extends JPanel
@@ -57,21 +59,17 @@ public class CloseGapsPanel extends JPanel
 
 	private final JRadioButton rdbtnSelectionOnly;
 
-	private final JPanel panelSearchRadius;
-
-	private final JLabel lbSearchRadius;
-
 	private final JFormattedTextField ftfSearchRadius;
 
-	private final JLabel lblSearchRadiusUnits;
+	private final JSlider sliderChannel;
 
-	public CloseGapsPanel( final CloseGapsParams model, final String units )
+	public CloseGapsPanel( final CloseGapsParams model, final String units, final int nChannels )
 	{
 		final GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
-		gridBagLayout.rowHeights = new int[] { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
+		gridBagLayout.rowHeights = new int[] { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
 		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout( gridBagLayout );
 
 		final JLabel lblTitle = new JLabel( "Close gaps in tracks" );
@@ -255,32 +253,55 @@ public class CloseGapsPanel extends JPanel
 		gbcLblHessianDiameterZUnit.insets = new Insets( 5, 5, 5, 5 );
 		panelHessian.add( lblHessianDiameterZUnit, gbcLblHessianDiameterZUnit );
 
-		panelSearchRadius = new JPanel();
-		final FlowLayout flowLayout = ( FlowLayout ) panelSearchRadius.getLayout();
-		flowLayout.setAlignment( FlowLayout.LEFT );
-		final GridBagConstraints gbc_panelSearchRadius = new GridBagConstraints();
-		gbc_panelSearchRadius.insets = new Insets( 5, 5, 5, 5 );
-		gbc_panelSearchRadius.fill = GridBagConstraints.BOTH;
-		gbc_panelSearchRadius.gridx = 0;
-		gbc_panelSearchRadius.gridy = 8;
-		add( panelSearchRadius, gbc_panelSearchRadius );
+		final JPanel panelSearchRadius = new JPanel();
+		final FlowLayout fl1 = ( FlowLayout ) panelSearchRadius.getLayout();
+		fl1.setAlignment( FlowLayout.LEFT );
+		final GridBagConstraints gbcPanelSearchRadius = new GridBagConstraints();
+		gbcPanelSearchRadius.insets = new Insets( 5, 5, 5, 5 );
+		gbcPanelSearchRadius.fill = GridBagConstraints.BOTH;
+		gbcPanelSearchRadius.gridx = 0;
+		gbcPanelSearchRadius.gridy = 8;
+		add( panelSearchRadius, gbcPanelSearchRadius );
 
-		lbSearchRadius = new JLabel( "Search radius:" );
+		final JLabel lbSearchRadius = new JLabel( "Search radius:" );
+		lbSearchRadius.setFont( SMALL_FONT );
 		panelSearchRadius.add( lbSearchRadius );
 
 		ftfSearchRadius = new JFormattedTextField();
+		ftfSearchRadius.setFont( SMALL_FONT );
 		ftfSearchRadius.setHorizontalAlignment( SwingConstants.RIGHT );
 		ftfSearchRadius.setPreferredSize( new Dimension( 60, 20 ) );
 		panelSearchRadius.add( ftfSearchRadius );
 
-		lblSearchRadiusUnits = new JLabel( "in units of spot diameter" );
+		final JLabel lblSearchRadiusUnits = new JLabel( "in units of spot diameter" );
 		panelSearchRadius.add( lblSearchRadiusUnits );
+
+		final JPanel panelChannel = new JPanel();
+		final FlowLayout fl2 = ( FlowLayout ) panelChannel.getLayout();
+		fl2.setAlignment( FlowLayout.LEFT );
+		final GridBagConstraints gbcPanelChannel = new GridBagConstraints();
+		gbcPanelChannel.insets = new Insets( 5, 5, 5, 5 );
+		gbcPanelChannel.fill = GridBagConstraints.BOTH;
+		gbcPanelChannel.gridx = 0;
+		gbcPanelChannel.gridy = 9;
+		add( panelChannel, gbcPanelChannel );
+
+		final JLabel lblDetectInChannel = new JLabel( "Detect in channel:" );
+		lblDetectInChannel.setFont( SMALL_FONT );
+		panelChannel.add( lblDetectInChannel );
+
+		sliderChannel = new JSlider();
+		panelChannel.add( sliderChannel );
+
+		final JLabel lblChannel = new JLabel( "1" );
+		lblChannel.setFont( SMALL_FONT.deriveFont( Font.BOLD ) );
+		panelChannel.add( lblChannel );
 
 		final GridBagConstraints gbcSeparator = new GridBagConstraints();
 		gbcSeparator.fill = GridBagConstraints.BOTH;
 		gbcSeparator.insets = new Insets( 5, 5, 5, 5 );
 		gbcSeparator.gridx = 0;
-		gbcSeparator.gridy = 9;
+		gbcSeparator.gridy = 10;
 		add( new JSeparator(), gbcSeparator );
 
 		lblScope = new JLabel( "Close gaps for:" );
@@ -289,7 +310,7 @@ public class CloseGapsPanel extends JPanel
 		gbcLblScope.anchor = GridBagConstraints.WEST;
 		gbcLblScope.insets = new Insets( 5, 5, 5, 5 );
 		gbcLblScope.gridx = 0;
-		gbcLblScope.gridy = 10;
+		gbcLblScope.gridy = 11;
 		add( lblScope, gbcLblScope );
 
 		final JRadioButton rdbtnAllEdges = new JRadioButton( "All edges" );
@@ -298,7 +319,7 @@ public class CloseGapsPanel extends JPanel
 		gbcRdbtnAllEdges.anchor = GridBagConstraints.WEST;
 		gbcRdbtnAllEdges.insets = new Insets( 5, 25, 5, 5 );
 		gbcRdbtnAllEdges.gridx = 0;
-		gbcRdbtnAllEdges.gridy = 11;
+		gbcRdbtnAllEdges.gridy = 12;
 		add( rdbtnAllEdges, gbcRdbtnAllEdges );
 
 		rdbtnSelectionOnly = new JRadioButton( "Edges in the current selection" );
@@ -307,14 +328,14 @@ public class CloseGapsPanel extends JPanel
 		gbcRdbtnSelectionOnly.anchor = GridBagConstraints.WEST;
 		gbcRdbtnSelectionOnly.insets = new Insets( 5, 25, 5, 5 );
 		gbcRdbtnSelectionOnly.gridx = 0;
-		gbcRdbtnSelectionOnly.gridy = 12;
+		gbcRdbtnSelectionOnly.gridy = 13;
 		add( rdbtnSelectionOnly, gbcRdbtnSelectionOnly );
 
 		final GridBagConstraints gbcSeparator3 = new GridBagConstraints();
 		gbcSeparator3.fill = GridBagConstraints.BOTH;
 		gbcSeparator3.insets = new Insets( 5, 5, 5, 5 );
 		gbcSeparator3.gridx = 0;
-		gbcSeparator3.gridy = 13;
+		gbcSeparator3.gridy = 14;
 		add( new JSeparator(), gbcSeparator3 );
 
 		btnGo = new JButton( "Start" );
@@ -323,7 +344,7 @@ public class CloseGapsPanel extends JPanel
 		gbcBtnGo.anchor = GridBagConstraints.SOUTHEAST;
 		gbcBtnGo.insets = new Insets( 5, 5, 5, 5 );
 		gbcBtnGo.gridx = 0;
-		gbcBtnGo.gridy = 14;
+		gbcBtnGo.gridy = 15;
 		add( btnGo, gbcBtnGo );
 
 		/*
@@ -348,6 +369,36 @@ public class CloseGapsPanel extends JPanel
 		scopeGroup.add( rdbtnSelectionOnly );
 
 		/*
+		 * Deal with channels: the slider and channel labels are only visible if
+		 * we find more than one channel.
+		 */
+		sliderChannel.setMaximum( nChannels );
+		sliderChannel.setMinimum( 1 );
+
+		if ( nChannels <= 1 )
+		{
+			lblChannel.setVisible( false );
+			lblDetectInChannel.setVisible( false );
+			sliderChannel.setVisible( false );
+		}
+		else
+		{
+			lblChannel.setVisible( true );
+			lblDetectInChannel.setVisible( true );
+			sliderChannel.setVisible( true );
+		}
+
+		/*
+		 * Listeners and stuff.
+		 */
+
+		sliderChannel.addChangeListener( e -> lblChannel.setText( "" + sliderChannel.getValue() ) );
+		GuiUtils.selectAllOnFocus( ftfSearchRadius );
+		GuiUtils.selectAllOnFocus( ftfLoGDiameter );
+		GuiUtils.selectAllOnFocus( ftfHessianDiameterXY );
+		GuiUtils.selectAllOnFocus( ftfHessianDiameterZ );
+
+		/*
 		 * Set values from model.
 		 */
 
@@ -366,6 +417,7 @@ public class CloseGapsPanel extends JPanel
 			throw new IllegalArgumentException( "Unknown gap-closing method: " + model.method );
 		}
 		ftfSearchRadius.setValue( Double.valueOf( model.searchRadius / 2. ) );
+		sliderChannel.setValue( model.sourceChannel + 1 ); // 1-based
 		rdbtnLoGAutoDiameter.setSelected( model.logAutoRadius );
 		rdbtnLoGManualDiameter.setSelected( !model.logAutoRadius );
 		ftfLoGDiameter.setValue( Double.valueOf( model.logRadius * 2. ) );
@@ -385,7 +437,9 @@ public class CloseGapsPanel extends JPanel
 			ftfLoGDiameter.setEnabled( selected );
 			rdbtnLoGAutoDiameter.setEnabled( selected );
 			rdbtnLoGManualDiameter.setEnabled( selected );
-			ftfSearchRadius.setEnabled( selected || rdbtnHessian.isSelected() );
+			final boolean anyOf = selected || rdbtnHessian.isSelected();
+			ftfSearchRadius.setEnabled( anyOf );
+			sliderChannel.setEnabled( anyOf );
 		};
 
 		final ItemListener hessianItemsVisibilityListener = e -> {
@@ -394,7 +448,9 @@ public class CloseGapsPanel extends JPanel
 			ftfHessianDiameterZ.setEnabled( selected );
 			rdbtnHessianAutoDiameter.setEnabled( selected );
 			rdbtnHessianDiameterXY.setEnabled( selected );
-			ftfSearchRadius.setEnabled( selected || rdbtnLoG.isSelected() );
+			final boolean anyOf = selected || rdbtnLoG.isSelected();
+			ftfSearchRadius.setEnabled( anyOf );
+			sliderChannel.setEnabled( anyOf );
 		};
 
 		rdbtnLoG.addItemListener( logItemsVisibilityListener );
@@ -414,6 +470,7 @@ public class CloseGapsPanel extends JPanel
 		return CloseGapsParams.create()
 				.method( method )
 				.searchRadius( ( ( Number ) ftfSearchRadius.getValue() ).doubleValue() * 2. )
+				.sourceChannel( sliderChannel.getValue() )
 				.logAutoRadius( rdbtnLoGAutoDiameter.isSelected() )
 				.logRadius( ( ( Number ) ftfLoGDiameter.getValue() ).doubleValue() / 2. )
 				.hessianAutoRadius( rdbtnHessianAutoDiameter.isSelected() )

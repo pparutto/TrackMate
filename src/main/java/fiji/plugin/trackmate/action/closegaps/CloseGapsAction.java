@@ -15,6 +15,8 @@ import fiji.plugin.trackmate.action.AbstractTMAction;
 import fiji.plugin.trackmate.action.TrackMateAction;
 import fiji.plugin.trackmate.action.TrackMateActionFactory;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
+import fiji.plugin.trackmate.util.TMUtils;
+import net.imagej.ImgPlus;
 
 public class CloseGapsAction extends AbstractTMAction
 {
@@ -39,8 +41,9 @@ public class CloseGapsAction extends AbstractTMAction
 			final Frame parent )
 	{
 		final Model model = trackmate.getModel();
+		final ImgPlus< ? > img = TMUtils.rawWraps( trackmate.getSettings().imp );
 		final String units = model.getSpaceUnits();
-		new CloseGapsController( model, selectionModel, units, logger ).show( parent );
+		new CloseGapsController( model, selectionModel, img, units, logger ).show( parent );
 	}
 
 	@Plugin( type = TrackMateActionFactory.class )

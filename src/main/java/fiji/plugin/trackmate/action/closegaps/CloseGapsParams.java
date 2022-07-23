@@ -7,6 +7,9 @@ public class CloseGapsParams
 
 	public final double searchRadius;
 
+	/** 0-based. */
+	public final int sourceChannel;
+
 	public final boolean logAutoRadius;
 
 	public final double logRadius;
@@ -19,8 +22,10 @@ public class CloseGapsParams
 
 	public final boolean selectionOnly;
 
+
 	private CloseGapsParams( final Method method,
 			final double searchRadius,
+			final int sourceChannel,
 			final boolean logAutoRadius,
 			final double logRadius,
 			final boolean hessianAutoRadius,
@@ -30,6 +35,7 @@ public class CloseGapsParams
 	{
 		this.method = method;
 		this.searchRadius = searchRadius;
+		this.sourceChannel = sourceChannel;
 		this.logAutoRadius = logAutoRadius;
 		this.logRadius = logRadius;
 		this.hessianAutoRadius = hessianAutoRadius;
@@ -52,6 +58,8 @@ public class CloseGapsParams
 		
 		private double searchRadius = 4.;
 
+		private int sourceChannel = 0; // 0-based
+
 		private double logRadius = 2.5;
 
 		private boolean hessianAutoRadius = true;
@@ -71,6 +79,12 @@ public class CloseGapsParams
 		public Builder searchRadius( final double searchRadius )
 		{
 			this.searchRadius = searchRadius;
+			return this;
+		}
+
+		public Builder sourceChannel( final int sourceChannel )
+		{
+			this.sourceChannel = sourceChannel;
 			return this;
 		}
 
@@ -115,6 +129,7 @@ public class CloseGapsParams
 			return new CloseGapsParams(
 					method,
 					searchRadius,
+					sourceChannel,
 					logAutoRadius,
 					logRadius,
 					hessianAutoRadius,

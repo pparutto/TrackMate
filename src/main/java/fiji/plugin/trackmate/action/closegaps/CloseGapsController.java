@@ -8,6 +8,8 @@ import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.SelectionModel;
 import fiji.plugin.trackmate.gui.Icons;
+import net.imagej.ImgPlus;
+import net.imagej.axis.Axes;
 
 public class CloseGapsController
 {
@@ -23,12 +25,15 @@ public class CloseGapsController
 
 	private final Logger logger;
 
-	public CloseGapsController( final Model model, final SelectionModel selectionModel, final String units, final Logger logger )
+	public CloseGapsController( final Model model, final SelectionModel selectionModel, final ImgPlus< ? > img, final String units, final Logger logger )
 	{
 		this.model = model;
 		this.selectionModel = selectionModel;
 		this.logger = logger;
-		this.gui = new CloseGapsPanel( params, units );
+		final int nChannels = ( int ) ( img.dimensionIndex( Axes.CHANNEL ) < 0
+				? 1
+				: img.dimension( img.dimensionIndex( Axes.CHANNEL ) ) );
+		this.gui = new CloseGapsPanel( params, units, nChannels );
 		gui.btnGo.addActionListener( e -> execute( gui.getParams() ) );
 	}
 
