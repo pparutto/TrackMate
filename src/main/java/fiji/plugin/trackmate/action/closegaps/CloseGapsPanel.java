@@ -69,7 +69,7 @@ public class CloseGapsPanel extends JPanel
 		gridBagLayout.columnWidths = new int[] { 0, 0 };
 		gridBagLayout.rowHeights = new int[] { 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5 };
 		gridBagLayout.columnWeights = new double[] { 1.0, Double.MIN_VALUE };
-		gridBagLayout.rowWeights = new double[] { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
+		gridBagLayout.rowWeights = new double[] { 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, Double.MIN_VALUE };
 		setLayout( gridBagLayout );
 
 		final JLabel lblTitle = new JLabel( "Close gaps in tracks" );
@@ -304,7 +304,7 @@ public class CloseGapsPanel extends JPanel
 		gbcSeparator.gridy = 10;
 		add( new JSeparator(), gbcSeparator );
 
-		lblScope = new JLabel( "Close gaps for:" );
+		lblScope = new JLabel( "Close gaps for" );
 		lblScope.setFont( FONT.deriveFont( Font.BOLD ) );
 		final GridBagConstraints gbcLblScope = new GridBagConstraints();
 		gbcLblScope.anchor = GridBagConstraints.WEST;
@@ -470,7 +470,7 @@ public class CloseGapsPanel extends JPanel
 		return CloseGapsParams.create()
 				.method( method )
 				.searchRadius( ( ( Number ) ftfSearchRadius.getValue() ).doubleValue() * 2. )
-				.sourceChannel( sliderChannel.getValue() )
+				.sourceChannel( sliderChannel.getValue() - 1 )
 				.logAutoRadius( rdbtnLoGAutoDiameter.isSelected() )
 				.logRadius( ( ( Number ) ftfLoGDiameter.getValue() ).doubleValue() / 2. )
 				.hessianAutoRadius( rdbtnHessianAutoDiameter.isSelected() )
