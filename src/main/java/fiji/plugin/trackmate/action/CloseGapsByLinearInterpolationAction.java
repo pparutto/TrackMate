@@ -164,7 +164,7 @@ public class CloseGapsByLinearInterpolationAction extends AbstractTMAction
 				weight * spot1.getFeature( feature ) + ( 1.0 - weight ) * spot2.getFeature( feature ) );
 	}
 
-	@Plugin( type = TrackMateActionFactory.class )
+	@Plugin( type = TrackMateActionFactory.class, visible = false )
 	public static class Factory implements TrackMateActionFactory
 	{
 
