@@ -28,6 +28,7 @@ import net.imglib2.algorithm.MultiThreaded;
 import net.imglib2.type.NativeType;
 import net.imglib2.type.Type;
 import net.imglib2.type.numeric.RealType;
+import net.imglib2.view.Views;
 
 public class CloseTrackGaps
 {
@@ -189,7 +190,7 @@ public class CloseTrackGaps
 			final double radiusZ = params.hessianAutoRadius
 					? spot.getFeature( Spot.RADIUS ).doubleValue()
 					: params.hessianRadiusZ;
-			detector = new HessianDetector<>( block, interval, calibration, radiusXY, radiusZ, threshold, false, true );
+			detector = new HessianDetector<>( Views.extendMirrorDouble( block ), interval, calibration, radiusXY, radiusZ, threshold, true, true );
 			break;
 		}
 		default:
