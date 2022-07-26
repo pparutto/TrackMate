@@ -16,7 +16,7 @@ public class CloseGapsController
 {
 
 	// Default values, stored for this session.
-	private static CloseGapsParams params = CloseGapsParams.create().get();
+	static CloseGapsParams params = CloseGapsParams.create().get();
 
 	private final CloseGapsPanel gui;
 
@@ -28,7 +28,7 @@ public class CloseGapsController
 
 	private final ImgPlus< ? > img;
 
-	public CloseGapsController( final Model model, final SelectionModel selectionModel, final ImgPlus< ? > img, final String units, final Logger logger )
+	public CloseGapsController( final Model model, final SelectionModel selectionModel, final ImgPlus< ? > img, final CloseGapsParams params, final String units, final Logger logger )
 	{
 		this.model = model;
 		this.selectionModel = selectionModel;
