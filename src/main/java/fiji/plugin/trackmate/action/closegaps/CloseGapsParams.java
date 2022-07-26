@@ -49,6 +49,22 @@ public class CloseGapsParams
 		return new Builder();
 	}
 
+	public static Builder create( final CloseGapsParams params )
+	{
+		final Builder builder = create();
+		builder
+				.method( params.method )
+				.logAutoRadius( params.logAutoRadius )
+				.searchRadius( params.searchRadius )
+				.sourceChannel( params.sourceChannel )
+				.logRadius( params.logRadius )
+				.hessianAutoRadius( params.hessianAutoRadius )
+				.hessianRadiusXY( params.hessianRadiusXY )
+				.hessianRadiusZ( params.hessianRadiusZ )
+				.selectionOnly( params.selectionOnly );
+		return builder;
+	}
+
 	public static class Builder
 	{
 
