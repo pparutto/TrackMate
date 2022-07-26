@@ -2,6 +2,7 @@ package fiji.plugin.trackmate.action.closegaps;
 
 import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -39,8 +40,11 @@ public class CloseTrackGaps
 		if ( params.selectionOnly )
 			edges = selectionModel.getEdgeSelection();
 		else
-			edges = model.getTrackModel().edgeSet();
-
+		{
+			edges = new HashSet<>();
+			for ( final Integer trackID : model.getTrackModel().trackIDs( true ) )
+				edges.addAll( model.getTrackModel().trackEdges( trackID ) );
+		}
 		run( edges, model, img, params, logger );
 	}
 
