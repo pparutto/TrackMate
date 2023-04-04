@@ -22,38 +22,75 @@
 
 package fiji.plugin.trackmate.util;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public final class Threads {
 
+	private static Map<Thread, String> threads = new ConcurrentHashMap<>();
+	private static Map<ExecutorService, String> executors = new ConcurrentHashMap<>();
+
+	private static <K, O extends K> O track(O obj, Map<K, String> map) {
+		StringWriter sw = new StringWriter();
+		new Exception().printStackTrace(new PrintWriter(sw));
+		map.put(obj, sw.toString());
+		return obj;
+	}
+
+	public static void dumpLiving() {
+		System.err.println("-------- BEGINNING DUMP OF ACTIVE TRACKMATE RESOURCES --------");
+		for (Map.Entry<Thread, String> entry : threads.entrySet()) {
+			Thread t = entry.getKey();
+			if (t.isAlive() && !t.isDaemon()) {
+				System.err.println("\n[" + t.getName() + "]");
+				System.err.println(entry.getValue());
+			}
+		}
+		for (Map.Entry<ExecutorService, String> entry : executors.entrySet()) {
+			ExecutorService es = entry.getKey();
+			if (!es.isShutdown()) {
+				System.err.println("\n[" + es + "]");
+				System.err.println(entry.getValue());
+			}
+		}
+		System.err.println("-------- DUMP COMPLETE --------");
+	}
+
 	public static void run( final Runnable r )
 	{
-		new Thread( r ).start();
+		Thread t = new Thread( r );
+		track(t, threads);
+		t.start();
 	}
 
 	public static void run( final String name, final Runnable r )
 	{
-		new Thread( r, name ).start();
+		Thread t = new Thread( r, name );
+		track(t, threads);
+		t.start();
 	}
 
 	public static ExecutorService newFixedThreadPool( final int nThreads )
 	{
-		return Executors.newFixedThreadPool( nThreads );
+		return track(Executors.newFixedThreadPool( nThreads ), executors);
 	}
 	public static ExecutorService newCachedThreadPool()
 	{
-		return Executors.newCachedThreadPool();
+		return track(Executors.newCachedThreadPool(), executors);
 	}
 
 	public static ExecutorService newSingleThreadExecutor()
 	{
-		return Executors.newSingleThreadExecutor();
+		return track(Executors.newSingleThreadExecutor(), executors);
 	}
 
 	public static ScheduledExecutorService newSingleThreadScheduledExecutor()
 	{
-		return Executors.newSingleThreadScheduledExecutor();
+		return track(Executors.newSingleThreadScheduledExecutor(), executors);
 	}
 }
