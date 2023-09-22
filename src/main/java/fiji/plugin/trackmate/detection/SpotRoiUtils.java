@@ -7,20 +7,18 @@ import java.util.List;
 
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotRoi;
-import ij.ImagePlus;
 import ij.gui.PolygonRoi;
-import ij.measure.Measurements;
 import ij.process.FloatPolygon;
 import net.imglib2.Interval;
+import net.imglib2.IterableInterval;
 import net.imglib2.RandomAccess;
 import net.imglib2.RandomAccessibleInterval;
-import net.imglib2.img.display.imagej.ImageJFunctions;
 import net.imglib2.roi.labeling.ImgLabeling;
 import net.imglib2.roi.labeling.LabelRegion;
 import net.imglib2.roi.labeling.LabelRegions;
 import net.imglib2.type.BooleanType;
 import net.imglib2.type.numeric.IntegerType;
-import net.imglib2.type.numeric.NumericType;
+import net.imglib2.type.numeric.RealType;
 import net.imglib2.view.Views;
 
 /**
@@ -61,7 +59,7 @@ public class SpotRoiUtils
 	 *            the image in which to read the quality value.
 	 * @return a list of spots, with ROI.
 	 */
-	public static < R extends IntegerType< R >, S extends NumericType< S > > List< Spot > from2DLabelingWithROI(
+	public static < R extends IntegerType< R >, S extends RealType< S > > List< Spot > from2DLabelingWithROI(
 			final ImgLabeling< Integer, R > labeling,
 			final Interval interval,
 			final double[] calibration,
@@ -90,9 +88,6 @@ public class SpotRoiUtils
 
 		// Quality image.
 		final List< Spot > spots = new ArrayList<>( polygons.size() );
-		final ImagePlus qualityImp = ( null == qualityImage )
-				? null
-				: ImageJFunctions.wrap( qualityImage, "QualityImage" );
 
 		// Simplify them and compute a quality.
 		for ( final Polygon polygon : polygons )
@@ -109,19 +104,8 @@ public class SpotRoiUtils
 			// Don't include ROIs that have been shrunk to < 1 pixel.
 			if ( fRoi.getNCoordinates() < 3 || fRoi.getStatistics().area <= 0. )
 				continue;
-
-			// Measure quality.
-			final double quality;
-			if ( null == qualityImp )
-			{
-				quality = fRoi.getStatistics().area;
-			}
-			else
-			{
-				qualityImp.setRoi( fRoi );
-				quality = qualityImp.getStatistics( Measurements.MIN_MAX ).max;
-			}
-
+			
+			// Create spot without quality value yet.
 			final Polygon fPolygon = fRoi.getPolygon();
 			final double[] xpoly = new double[ fPolygon.npoints ];
 			final double[] ypoly = new double[ fPolygon.npoints ];
@@ -130,8 +114,28 @@ public class SpotRoiUtils
 				xpoly[ i ] = calibration[ 0 ] * ( interval.min( 0 ) + fPolygon.xpoints[ i ] - 0.5 );
 				ypoly[ i ] = calibration[ 1 ] * ( interval.min( 1 ) + fPolygon.ypoints[ i ] - 0.5 );
 			}
+			final SpotRoi spot = SpotRoi.createSpot( xpoly, ypoly, -1. );
 
-			spots.add( SpotRoi.createSpot( xpoly, ypoly, quality ) );
+			// Measure quality.
+			final double quality;
+			if ( null == qualityImage )
+			{
+				quality = fRoi.getStatistics().area;
+			}
+			else
+			{
+				final IterableInterval< S > iterable = spot.iterable( qualityImage, calibration );
+				double max = Double.NEGATIVE_INFINITY;
+				for ( final S s : iterable )
+				{
+					final double val = s.getRealDouble();
+					if ( val > max )
+						max = val;
+				}
+				quality = max;
+			}
+			spot.putFeature( Spot.QUALITY, quality );
+			spots.add( spot );
 		}
 		return spots;
 	}
