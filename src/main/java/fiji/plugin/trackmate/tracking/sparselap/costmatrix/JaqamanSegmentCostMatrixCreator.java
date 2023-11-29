@@ -26,6 +26,7 @@ import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_ALLOW_GAP_CLOSING;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_ALLOW_TRACK_MERGING;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_ALLOW_TRACK_SPLITTING;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_ALTERNATIVE_LINKING_COST_FACTOR;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_COMPONENTS_DISTANCES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_CUTOFF_PERCENTILE;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_GAP_CLOSING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_GAP_CLOSING_MAX_DISTANCE;
@@ -37,8 +38,10 @@ import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_SPLITTING_MAX_DISTA
 import static fiji.plugin.trackmate.util.TMUtils.checkMapKeys;
 import static fiji.plugin.trackmate.util.TMUtils.checkParameter;
 import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.tracking.sparselap.costfunction.ComponentDistancesTime;
 import fiji.plugin.trackmate.tracking.sparselap.costfunction.CostFunction;
 import fiji.plugin.trackmate.tracking.sparselap.costfunction.FeaturePenaltyCostFunction;
+import fiji.plugin.trackmate.tracking.sparselap.costfunction.ReachableDistCostFunctionTime;
 import fiji.plugin.trackmate.tracking.sparselap.costfunction.SquareDistCostFunction;
 import fiji.plugin.trackmate.tracking.sparselap.linker.SparseCostMatrix;
 
@@ -406,6 +409,8 @@ public class JaqamanSegmentCostMatrixCreator implements CostMatrixCreator< Spot,
 		{
 			costFunction = new SquareDistCostFunction();
 		}
+		else if ( settings.containsKey( KEY_COMPONENTS_DISTANCES ) )
+			costFunction = new ReachableDistCostFunctionTime( ( ComponentDistancesTime ) settings.get( KEY_COMPONENTS_DISTANCES ) );
 		else
 		{
 			costFunction = new FeaturePenaltyCostFunction( featurePenalties );

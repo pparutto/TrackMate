@@ -25,6 +25,8 @@ import static fiji.plugin.trackmate.tracking.LAPUtils.checkFeatureMap;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_ALTERNATIVE_LINKING_COST_FACTOR;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_LINKING_FEATURE_PENALTIES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_LINKING_MAX_DISTANCE;
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_COMPONENTS_DISTANCES;
+
 import static fiji.plugin.trackmate.util.TMUtils.checkMapKeys;
 import static fiji.plugin.trackmate.util.TMUtils.checkParameter;
 
@@ -48,8 +50,10 @@ import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
 import fiji.plugin.trackmate.tracking.SpotTracker;
+import fiji.plugin.trackmate.tracking.sparselap.costfunction.ComponentDistancesTime;
 import fiji.plugin.trackmate.tracking.sparselap.costfunction.CostFunction;
 import fiji.plugin.trackmate.tracking.sparselap.costfunction.FeaturePenaltyCostFunction;
+import fiji.plugin.trackmate.tracking.sparselap.costfunction.ReachableDistCostFunctionTime;
 import fiji.plugin.trackmate.tracking.sparselap.costfunction.SquareDistCostFunction;
 import fiji.plugin.trackmate.tracking.sparselap.costmatrix.JaqamanLinkingCostMatrixCreator;
 import fiji.plugin.trackmate.tracking.sparselap.linker.JaqamanLinker;
@@ -277,6 +281,9 @@ public class SparseLAPFrameToFrameTracker extends MultiThreadedBenchmarkAlgorith
 	 */
 	protected CostFunction< Spot, Spot > getCostFunction( final Map< String, Double > featurePenalties )
 	{
+		if ( settings.containsKey( KEY_COMPONENTS_DISTANCES ) )
+			return new ReachableDistCostFunctionTime ( ( ComponentDistancesTime ) settings.get( KEY_COMPONENTS_DISTANCES ) );
+
 		if ( null == featurePenalties || featurePenalties.isEmpty() )
 			return new SquareDistCostFunction();
 
