@@ -60,7 +60,6 @@ public class ComponentDistancesTime
 		}
 	}
 
-	//protected HashMap < Integer, HashMap < Integer, HashMap < Integer, ArrayList< CompTime > > > > comp_dist;
 	protected IntHashMap< IntHashMap< CompTime > > dists;
 	protected IntHashMap< ArrayList<PixelGroupTime> > px1D_to_3D;
 	protected ArrayList<Integer> win_cents;
@@ -72,8 +71,8 @@ public class ComponentDistancesTime
 	protected IntHashMap< ArrayList<SpotComp > > spotComps;
 
 	protected static int[][] nh_idxs = { { -1, -1 }, { -1, 0 }, { -1, 1 },
-										 { 0, -1 }, { 0, 1 },
-										 { 1, -1 }, { 1, 0 }, { 1, 1 } };
+										 { 0,  -1 },            {  0, 1 },
+										 { 1,  -1 }, {  1, 0 }, {  1, 1 } };
 
 	protected static int byte_to_int( final byte[] bs )
 	{

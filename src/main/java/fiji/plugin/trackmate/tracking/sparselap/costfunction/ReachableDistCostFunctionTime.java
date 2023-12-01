@@ -46,8 +46,6 @@ public class ReachableDistCostFunctionTime implements CostFunction< Spot, Spot >
 		if ( d1 > 25 )
 			return d1;
 
-		int frame = source.getFeature( "FRAME" ).intValue();
-
 		ArrayList<Integer> winsInter = this.intersectWins( this.cdists.getWindowIdxs( source.getFeature( "FRAME" ).intValue() ),
 														   this.cdists.getWindowIdxs( target.getFeature( "FRAME" ).intValue() ) );
 
@@ -66,7 +64,6 @@ public class ReachableDistCostFunctionTime implements CostFunction< Spot, Spot >
 		ArrayList<int[]> dst_pxs = ReachableDistCostFunctionTime.neighbors(
 				dst_px2D, this.cdists.w(), this.cdists.h() );
 
-		ArrayList<Double[]> nh_dists = new ArrayList<> ();
 		double best_dist = Float.MAX_VALUE;
 		for ( int curWin: winsInter )
 		{
@@ -100,8 +97,6 @@ public class ReachableDistCostFunctionTime implements CostFunction< Spot, Spot >
 								   Math.sqrt( ComponentDistancesTime.sq_dist_to_px( post, dst_px, cdists.pxsize() ) ), 2 );
 
 					final double d2 = ( d1 == 0 ) ? Double.MIN_NORMAL : d1;
-					nh_dists.add( new Double[] { (double) src_px[0], (double) src_px[1],
-												 (double) dst_px[0], (double) dst_px[1], (double) frame, (double) curWin, d2 } );
 
 					if ( d2 < best_dist )
 						best_dist = d2;
