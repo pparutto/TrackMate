@@ -166,6 +166,10 @@ public class SparseLAPTracker extends MultiThreadedBenchmarkAlgorithm implements
 		ftfSettings.put( KEY_ALTERNATIVE_LINKING_COST_FACTOR, settings.get( KEY_ALTERNATIVE_LINKING_COST_FACTOR ) );
 		ftfSettings.put( KEY_LINKING_FEATURE_PENALTIES, settings.get( KEY_LINKING_FEATURE_PENALTIES ) );
 
+		//struct aware tracking
+		if ( settings.containsKey( KEY_COMPONENTS_DISTANCES ) )
+			ftfSettings.put( KEY_COMPONENTS_DISTANCES, settings.get( KEY_COMPONENTS_DISTANCES ) );
+
 		final SparseLAPFrameToFrameTracker frameToFrameLinker = new SparseLAPFrameToFrameTracker( spots, ftfSettings );
 		cancelable = frameToFrameLinker;
 		frameToFrameLinker.setNumThreads( numThreads );

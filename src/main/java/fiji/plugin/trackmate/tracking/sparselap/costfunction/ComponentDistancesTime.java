@@ -87,8 +87,8 @@ public class ComponentDistancesTime
 
 	protected HashMap<CompTime, Integer> elts_f;
 	protected HashMap<Integer, CompTime> elts_r;
-	protected IntHashMap< IntHashMap< Integer > > dists;
-	protected IntHashMap< ArrayList<PixelGroupTime> > px1D_to_3D;
+	protected IntHashMap< IntHashMap< IntHashMap< ArrayList< Integer > > > > dists;
+	protected IntHashMap< ArrayList< PixelGroupTime > > px1D_to_3D;
 	protected ArrayList<Integer> win_cents;
 	protected int wdur;
 	protected int w;
@@ -196,39 +196,57 @@ public class ComponentDistancesTime
 				all_dists[i] = byte_to_float( buff_f );
 			}
 
+			int lab = -1;
 			is.read( buff_i );
-			Nelt = byte_to_int( buff_i );
-			for ( int i = 0; i < Nelt; ++i )
+			int Ncomps = byte_to_int( buff_i );
+			for ( int k = 0; k < Ncomps; ++k )
 			{
 				is.read( buff_i );
-				int px_s3D = byte_to_int( buff_i );
-				this.dists.put( px_s3D, new IntHashMap<> ( 2 ) );
+				lab = byte_to_int( buff_i );
+				this.dists.put(lab, new IntHashMap<> () );
 
 				is.read( buff_i );
-				int Nelt2 = byte_to_int( buff_i );
-				for ( int j = 0; j < Nelt2; ++j )
+				Nelt = byte_to_int( buff_i );
+				for ( int i = 0; i < Nelt; ++i )
 				{
 					is.read( buff_i );
-					int px_s3D2 = byte_to_int( buff_i );
+					int px_s3D = byte_to_int( buff_i );
+					this.dists.get( lab ).put( px_s3D, new IntHashMap<> ( 2 ) );
 
 					is.read( buff_i );
-					int d = byte_to_int( buff_i );
-					is.read( buff_i );
-					int wStart = byte_to_int( buff_i );
-					is.read( buff_i );
-					int wEnd = byte_to_int( buff_i );
-
-					//System.out.println(String.format("%d %d %d %d %d %d", comp, px_s, px_d, wStart, wEnd, dw));
-					CompTime ct = new CompTime( all_dists[d], this.win_cents.get( wStart ) - dw,
-							this.win_cents.get( wEnd ) + dw );
-					if ( ! this.elts_f.containsKey(ct) )
+					int Nelt2 = byte_to_int( buff_i );
+					for ( int j = 0; j < Nelt2; ++j )
 					{
-						int N = this.elts_f.size() - 1;
-						this.elts_f.put( ct, N );
-						this.elts_r.put( N, ct );
-					}
+						is.read( buff_i );
+						int px_s3D2 = byte_to_int( buff_i );
 
-					this.dists.get( px_s3D ).put( px_s3D2, this.elts_f.get( ct ) );
+						is.read( buff_i );
+						int Nelt3 = byte_to_int( buff_i );
+						for ( int l = 0; l < Nelt3; ++l )
+						{
+							is.read( buff_i );
+							int didx = byte_to_int( buff_i );
+							is.read( buff_i );
+							int wStart = byte_to_int( buff_i );
+							is.read( buff_i );
+							int wEnd = byte_to_int( buff_i );
+
+							//System.out.println(String.format("%d %d %d %d %d %d", comp, px_s, px_d, wStart, wEnd, dw));
+							CompTime ct = new CompTime( all_dists[didx], this.win_cents.get( wStart ) - dw,
+									this.win_cents.get( wEnd ) + dw );
+							if ( ! this.elts_f.containsKey( ct ) )
+							{
+								int N = this.elts_f.size() - 1;
+								this.elts_f.put( ct, N );
+								this.elts_r.put( N, ct );
+							}
+
+							if ( ! this.dists.get( lab ). get( px_s3D ).containsKey( px_s3D2 ) )
+								this.dists.get( lab ).get( px_s3D ).put( px_s3D2, new ArrayList<> ());
+							
+							this.dists.get( lab ).get( px_s3D ).get( px_s3D2 ).add( this.elts_f.get( ct ) );
+						}
+					}
 				}
 			}
 
@@ -248,6 +266,9 @@ public class ComponentDistancesTime
 		this.pxsize = pxsize;
 		this.compImg = compImg;
 		this.spotComps = new IntHashMap<> ();
+
+		this.elts_f = new HashMap<CompTime, Integer> ();
+		this.elts_r = new HashMap<Integer, CompTime> ();
 
 		this.read_binary_spts( fname, dt );
 	}
@@ -288,7 +309,7 @@ public class ComponentDistancesTime
 		System.out.println(this.spotComps.size());
 	}
 
-	public float dist( int px1, int px2 )
+	public float dist( int px1, int px2, int comp, int winIdx )
 	{
 		if ( px1 > px2 )
 		{
@@ -297,15 +318,11 @@ public class ComponentDistancesTime
 			px2 = tmp;
 		}
 
-		if ( !this.dists.containsKey( px1 ) || !this.dists.get( px1 ).containsKey( px2 ) )
+		if ( !this.dists.containsKey( comp ) || !this.dists.get( comp ).containsKey( px1 ) ||
+			 !this.dists.get( comp ).get( px1 ).containsKey( px2 ) )
 			return Float.MAX_VALUE;
 
-		return this.elts_r.get(this.dists.get( px1 ).get( px2 )).dist;
-	}
-
-	public boolean exists(int px1 )
-	{
-		return this.dists.containsKey( px1 );
+		return this.elts_r.get(this.dists.get( comp ).get( px1 ).get( px2 ).get( winIdx ) ).dist;
 	}
 
 //	public IntHashMap< IntHashMap< Integer > > dists()

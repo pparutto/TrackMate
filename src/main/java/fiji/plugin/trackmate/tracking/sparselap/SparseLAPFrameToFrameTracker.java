@@ -317,6 +317,7 @@ public class SparseLAPFrameToFrameTracker extends MultiThreadedBenchmarkAlgorith
 		mandatoryKeys.add( KEY_ALTERNATIVE_LINKING_COST_FACTOR );
 		final List< String > optionalKeys = new ArrayList<>();
 		optionalKeys.add( KEY_LINKING_FEATURE_PENALTIES );
+		optionalKeys.add( KEY_COMPONENTS_DISTANCES );
 		ok = ok & checkMapKeys( settings, mandatoryKeys, optionalKeys, str );
 
 		return ok;
