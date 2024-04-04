@@ -90,6 +90,7 @@ public class ComponentDistancesTime
 	protected IntHashMap< IntHashMap< IntHashMap< ArrayList< Integer > > > > dists;
 	protected IntHashMap< ArrayList< PixelGroupTime > > px1D_to_3D;
 	protected ArrayList<Integer> win_cents;
+	protected boolean is2D;
 	protected int wdur;
 	protected int w;
 	protected int h;
@@ -133,122 +134,195 @@ public class ComponentDistancesTime
 		return -1;
 	}
 
+	protected float[] read_dists( FileInputStream is ) throws IOException
+	{
+		byte[] buff_i = new byte[3];
+		byte[] buff_f = new byte[4];
+
+		is.read( buff_i );
+		int Nelt = byte_to_int( buff_i );
+		float[] res = new float[Nelt];
+		for ( int i = 0; i < Nelt; ++i )
+		{
+			is.read( buff_f );
+			res[i] = byte_to_float( buff_f );
+		}
+
+		return res;
+	}
+
 	protected void read_binary_spts( final String fname, double dt ) throws FileNotFoundException
 	{
 		FileInputStream is = new FileInputStream( fname );
 		byte[] buff_i = new byte[3];
-		byte[] buff_f = new byte[4];
 
 		float[] all_dists = null;
-
 		this.win_cents = new ArrayList<> ();
 
 		try
 		{
 			is.read( buff_i );
-			int Wdur = byte_to_int( buff_i );
-			this.wdur = Wdur;
+			int version = byte_to_int( buff_i );
 
-			is.read( buff_f );
-			float Wover = byte_to_float( buff_f );
-
-			is.read( buff_i );
-			int Wmax = byte_to_int( buff_i );
-
-			//System.out.println(String.format("%d %f %d", Wdur, Wover, Wmax));
-
-			int dw = ( int ) Math.floor( Wdur * Wover );
-			if ( Wover == 0 )
-				dw = ( int ) Math.floor( ( ( float ) Wdur ) / 2.0 );
-
-			for ( int i = 1; i <= Wmax; ++i )
-				this.win_cents.add( i * dw );
-
-			String s = "";
-			for ( int i = 0; i < this.win_cents.size() ; ++i )
-				s = s.concat( String.format( " %d [%d, %d]", this.win_cents.get ( i ), this.win_cents.get( i ) - dw, this.win_cents.get( i ) + dw ) );
-			System.out.println( String.format( "Time windows (%d): %s", this.win_cents.size(), s ) );
-
-			//System.out.println(String.format("%d %g %d %d %d", Wdur, Wover, Wmax, dw, this.win_cents.size()));
-
-			is.read( buff_i );
-			int Nelt = byte_to_int( buff_i );
-			this.px1D_to_3D = new IntHashMap< ArrayList<PixelGroupTime> > ();
-			for ( int i = 0; i < Nelt; ++i )
+			if ( version == 2 ) //this is 2D data
 			{
-				is.read( buff_i );
-				int px1D = byte_to_int( buff_i );
-				is.read( buff_i );
-				int wStart = byte_to_int( buff_i );
-				is.read( buff_i );
-				int wEnd = byte_to_int( buff_i );
-				if ( !this.px1D_to_3D.containsKey( px1D ) )
-					this.px1D_to_3D.put( px1D, new ArrayList<PixelGroupTime> () );
-				this.px1D_to_3D.get( px1D ).add( new PixelGroupTime( i, wStart, wEnd ) );
-			}
+				this.is2D = true;
+				all_dists = read_dists( is );
 
-			is.read( buff_i );
-			Nelt = byte_to_int( buff_i );
-			all_dists = new float[Nelt];
-			for ( int i = 0; i < Nelt; ++i )
-			{
-				is.read( buff_f );
-				all_dists[i] = byte_to_float( buff_f );
-			}
-
-			int lab = -1;
-			is.read( buff_i );
-			int Ncomps = byte_to_int( buff_i );
-			for ( int k = 0; k < Ncomps; ++k )
-			{
-				is.read( buff_i );
-				lab = byte_to_int( buff_i );
-				this.dists.put(lab, new IntHashMap<> () );
+				this.px1D_to_3D = new IntHashMap< ArrayList<PixelGroupTime> > ();
 
 				is.read( buff_i );
-				Nelt = byte_to_int( buff_i );
-				for ( int i = 0; i < Nelt; ++i )
+				int Ncomps = byte_to_int( buff_i );
+				for ( int i = 0; i < Ncomps; ++i )
 				{
 					is.read( buff_i );
-					int px_s3D = byte_to_int( buff_i );
-					this.dists.get( lab ).put( px_s3D, new IntHashMap<> ( 2 ) );
+					int comp = byte_to_int( buff_i );
+					this.dists.put( comp, new IntHashMap<> () );
 
 					is.read( buff_i );
-					int Nelt2 = byte_to_int( buff_i );
-					for ( int j = 0; j < Nelt2; ++j )
+					int Npxs1 = byte_to_int( buff_i );
+					for ( int j = 0; j < Npxs1; ++j )
 					{
 						is.read( buff_i );
-						int px_s3D2 = byte_to_int( buff_i );
+						int px1 = byte_to_int( buff_i );
+						this.dists.get( comp ).put( px1, new IntHashMap<> ( 2 ) );
+						if ( !this.px1D_to_3D.containsKey( px1 ) )
+						{
+							this.px1D_to_3D.put( px1 , new ArrayList<> () );
+							this.px1D_to_3D.get( px1 ).add( new PixelGroupTime( px1, 0, 0 ) );
+						}
 
 						is.read( buff_i );
-						int Nelt3 = byte_to_int( buff_i );
-						for ( int l = 0; l < Nelt3; ++l )
+						int Npxs2 = byte_to_int( buff_i );
+						for ( int k = 0; k < Npxs2; ++k )
 						{
 							is.read( buff_i );
-							int didx = byte_to_int( buff_i );
-							is.read( buff_i );
-							int wStart = byte_to_int( buff_i );
-							is.read( buff_i );
-							int wEnd = byte_to_int( buff_i );
+							int px2 = byte_to_int( buff_i );
 
-							//System.out.println(String.format("%d %d %d %d %d %d", comp, px_s, px_d, wStart, wEnd, dw));
-							CompTime ct = new CompTime( all_dists[didx], this.win_cents.get( wStart ) - dw,
-									this.win_cents.get( wEnd ) + dw );
+							if ( !this.px1D_to_3D.containsKey( px2 ) )
+							{
+								this.px1D_to_3D.put( px2 , new ArrayList<> () );
+								this.px1D_to_3D.get( px2 ).add( new PixelGroupTime( px2, 0, 0 ) );
+							}
+
+							is.read( buff_i );
+							int didx = byte_to_int( buff_i );
+
+							CompTime ct = new CompTime( all_dists[didx], 0, 0 );
 							if ( ! this.elts_f.containsKey( ct ) )
 							{
-								int N = this.elts_f.size() - 1;
+								int N = this.elts_f.size();
 								this.elts_f.put( ct, N );
 								this.elts_r.put( N, ct );
 							}
 
-							if ( ! this.dists.get( lab ). get( px_s3D ).containsKey( px_s3D2 ) )
-								this.dists.get( lab ).get( px_s3D ).put( px_s3D2, new ArrayList<> ());
-							
-							this.dists.get( lab ).get( px_s3D ).get( px_s3D2 ).add( this.elts_f.get( ct ) );
+							this.dists.get( comp ).get( px1 ).put( px2, new ArrayList<> () );
+							this.dists.get( comp ).get( px1 ).get( px2 ).add( elts_f.get( ct ) );
 						}
 					}
 				}
 			}
+			else
+				assert( false );
+
+//			is.read( buff_i );
+//			int Wdur = byte_to_int( buff_i );
+//			this.wdur = Wdur;
+//
+//			is.read( buff_f );
+//			float Wover = byte_to_float( buff_f );
+//
+//			is.read( buff_i );
+//			int Wmax = byte_to_int( buff_i );
+//
+//			//System.out.println(String.format("%d %f %d", Wdur, Wover, Wmax));
+//
+//			int dw = ( int ) Math.floor( Wdur * Wover );
+//			if ( Wover == 0 )
+//				dw = ( int ) Math.floor( ( ( float ) Wdur ) / 2.0 );
+//
+//			for ( int i = 1; i <= Wmax; ++i )
+//				this.win_cents.add( i * dw );
+//
+//			String s = "";
+//			for ( int i = 0; i < this.win_cents.size() ; ++i )
+//				s = s.concat( String.format( " %d [%d, %d]", this.win_cents.get ( i ), this.win_cents.get( i ) - dw, this.win_cents.get( i ) + dw ) );
+//			System.out.println( String.format( "Time windows (%d): %s", this.win_cents.size(), s ) );
+//
+//			//System.out.println(String.format("%d %g %d %d %d", Wdur, Wover, Wmax, dw, this.win_cents.size()));
+//
+//			is.read( buff_i );
+//			int Nelt = byte_to_int( buff_i );
+//			this.px1D_to_3D = new IntHashMap< ArrayList<PixelGroupTime> > ();
+//			for ( int i = 0; i < Nelt; ++i )
+//			{
+//				is.read( buff_i );
+//				int px1D = byte_to_int( buff_i );
+//				is.read( buff_i );
+//				int wStart = byte_to_int( buff_i );
+//				is.read( buff_i );
+//				int wEnd = byte_to_int( buff_i );
+//				if ( !this.px1D_to_3D.containsKey( px1D ) )
+//					this.px1D_to_3D.put( px1D, new ArrayList<PixelGroupTime> () );
+//				this.px1D_to_3D.get( px1D ).add( new PixelGroupTime( i, wStart, wEnd ) );
+//			}
+//
+//
+//			all_dists = read_dists( is );
+//
+//			int lab = -1;
+//			is.read( buff_i );
+//			int Ncomps = byte_to_int( buff_i );
+//			for ( int k = 0; k < Ncomps; ++k )
+//			{
+//				is.read( buff_i );
+//				lab = byte_to_int( buff_i );
+//				this.dists.put(lab, new IntHashMap<> () );
+//
+//				is.read( buff_i );
+//				Nelt = byte_to_int( buff_i );
+//				for ( int i = 0; i < Nelt; ++i )
+//				{
+//					is.read( buff_i );
+//					int px_s3D = byte_to_int( buff_i );
+//					this.dists.get( lab ).put( px_s3D, new IntHashMap<> ( 2 ) );
+//
+//					is.read( buff_i );
+//					int Nelt2 = byte_to_int( buff_i );
+//					for ( int j = 0; j < Nelt2; ++j )
+//					{
+//						is.read( buff_i );
+//						int px_s3D2 = byte_to_int( buff_i );
+//
+//						is.read( buff_i );
+//						int Nelt3 = byte_to_int( buff_i );
+//						for ( int l = 0; l < Nelt3; ++l )
+//						{
+//							is.read( buff_i );
+//							int didx = byte_to_int( buff_i );
+//							is.read( buff_i );
+//							int wStart = byte_to_int( buff_i );
+//							is.read( buff_i );
+//							int wEnd = byte_to_int( buff_i );
+//
+//							//System.out.println(String.format("%d %d %d %d %d %d", comp, px_s, px_d, wStart, wEnd, dw));
+//							CompTime ct = new CompTime( all_dists[didx], this.win_cents.get( wStart ) - dw,
+//									this.win_cents.get( wEnd ) + dw );
+//							if ( ! this.elts_f.containsKey( ct ) )
+//							{
+//								int N = this.elts_f.size() - 1;
+//								this.elts_f.put( ct, N );
+//								this.elts_r.put( N, ct );
+//							}
+//
+//							if ( ! this.dists.get( lab ). get( px_s3D ).containsKey( px_s3D2 ) )
+//								this.dists.get( lab ).get( px_s3D ).put( px_s3D2, new ArrayList<> ());
+//
+//							this.dists.get( lab ).get( px_s3D ).get( px_s3D2 ).add( this.elts_f.get( ct ) );
+//						}
+//					}
+//				}
+//			}
 
 			assert( is.read(buff_i) == -1 );
 		}
@@ -261,6 +335,7 @@ public class ComponentDistancesTime
 	public ComponentDistancesTime( final String fname, final ImagePlus compImg, int w, int h, double dt, double pxsize ) throws FileNotFoundException
 	{
 		this.dists = new IntHashMap<> ();
+		this.is2D = false;
 		this.w = w;
 		this.h = h;
 		this.pxsize = pxsize;
@@ -275,6 +350,13 @@ public class ComponentDistancesTime
 
 	public ArrayList<Integer> getWindowIdxs ( int frame )
 	{
+		if ( this.is2D )
+		{
+			ArrayList<Integer> res = new ArrayList<Integer> ();
+			res.add( 0 );
+			return res;
+		}
+
 		ArrayList<Integer> res = new ArrayList<> ();
 		for ( int i = 0; i < this.win_cents.size(); ++i )
 		{
@@ -294,12 +376,14 @@ public class ComponentDistancesTime
 			int py = (int) Math.ceil( s.getFeature( "POSITION_Y" ) / this.pxsize );
 
 			ArrayList< SpotComp > comps = new ArrayList<>();
-			assert( this.getWindowIdxs( frame ).size() <= 1 );
+			if ( this.is2D )
+				assert( this.getWindowIdxs( frame ).size() == 1 );
 			for ( int i: this.getWindowIdxs( frame ) )
-				comps.add( new SpotComp( i, this.compImg.getStack().getProcessor( i+1 ).getPixel( px, py ) ) );
+				comps.add( new SpotComp( i, this.getComponent( i, new int[] {px, py} ) ) );
 
 			this.spotComps.put( s.ID(), comps );
 		}
+		System.out.println(String.format("comp size = %d", spotComps.size()));
 	}
 
 	public void clear_spots_comps()
@@ -322,7 +406,7 @@ public class ComponentDistancesTime
 			 !this.dists.get( comp ).get( px1 ).containsKey( px2 ) )
 			return Float.MAX_VALUE;
 
-		return this.elts_r.get(this.dists.get( comp ).get( px1 ).get( px2 ).get( winIdx ) ).dist;
+		return this.elts_r.get( this.dists.get( comp ).get( px1 ).get( px2 ).get( winIdx ) ).dist;
 	}
 
 //	public IntHashMap< IntHashMap< Integer > > dists()
@@ -366,5 +450,6 @@ public class ComponentDistancesTime
 	public int px1D( int[] p )
 	{
 		return p[1] * this.w + p[0];
+		//return p[0] * this.h + p[1];
 	}
 }

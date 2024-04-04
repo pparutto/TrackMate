@@ -122,8 +122,10 @@ public class ReachableDistCostFunctionTime implements CostFunction< Spot, Spot >
 		int sComp = this.cdists.getComponent( sFrame, src_px2D );
 		int tComp = this.cdists.getComponent( tFrame, dst_px2D );
 
-		System.out.println(String.format("source: frame=%d pos=(%d %d) comp=%d", sFrame, src_px2D[0], src_px2D[1], sComp));
-		System.out.println(String.format("target: frame=%d pos=(%d %d) comp=%d", tFrame, dst_px2D[0], dst_px2D[1], tComp));
+		int s1D = cdists.px1D( src_px2D );
+		int d1D = cdists.px1D( dst_px2D );
+		System.out.println(String.format("source: frame=%d pos=(%d %d) comp=%d 1D=%d", sFrame, src_px2D[0], src_px2D[1], sComp, s1D));
+		System.out.println(String.format("target: frame=%d pos=(%d %d) comp=%d 1D=%d", tFrame, dst_px2D[0], dst_px2D[1], tComp, d1D));
 
 		if ( sComp != tComp )
 		{
