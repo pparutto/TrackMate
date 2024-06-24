@@ -26,6 +26,7 @@ import java.util.Collection;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.features.FeatureAnalyzer;
 import net.imglib2.algorithm.Benchmark;
 import net.imglib2.algorithm.MultiThreaded;
@@ -52,7 +53,7 @@ public interface EdgeAnalyzer extends Benchmark, FeatureAnalyzer, MultiThreaded
 	 * @param model
 	 *            the {@link Model} they belong to.
 	 */
-	public void process( final Collection< DefaultWeightedEdge > edges, Model model );
+	public void process( final Collection< DefaultWeightedEdge > edges, Model model, final Settings settings );
 
 	/**
 	 * Returns <code>true</code> if this analyzer is a local analyzer. That is:

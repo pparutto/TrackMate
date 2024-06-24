@@ -32,6 +32,7 @@ import org.scijava.plugin.Plugin;
 import fiji.plugin.trackmate.Dimension;
 import fiji.plugin.trackmate.FeatureModel;
 import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.Spot;
 
 @Plugin( type = EdgeAnalyzer.class )
@@ -72,7 +73,7 @@ public class EdgeSpeedAnalyzer extends AbstractEdgeAnalyzer
 	}
 
 	@Override
-	protected void analyze( final DefaultWeightedEdge edge, final Model model )
+	protected void analyze( final DefaultWeightedEdge edge, final Model model, final Settings settings )
 	{
 		final FeatureModel featureModel = model.getFeatureModel();
 		final Spot source = model.getTrackModel().getEdgeSource( edge );

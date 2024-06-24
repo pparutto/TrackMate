@@ -27,6 +27,7 @@ import fiji.plugin.trackmate.Dimension;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.ModelChangeEvent;
 import fiji.plugin.trackmate.ModelChangeListener;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.edges.EdgeTimeLocationAnalyzer;
 
@@ -117,7 +118,7 @@ public class EdgeTimeAndLocationAnalyzerTest
 		final Map< String, Boolean > isIntFeature = analyzer.getIsIntFeature();
 		model.getFeatureModel().declareEdgeFeatures( features, featureNames, featureShortNames, featureDimensions, isIntFeature );
 		// Process model
-		analyzer.process( model.getTrackModel().edgeSet(), model );
+		analyzer.process( model.getTrackModel().edgeSet(), model, null );
 
 		// Collect features
 		for ( final DefaultWeightedEdge edge : model.getTrackModel().edgeSet() )
@@ -140,7 +141,7 @@ public class EdgeTimeAndLocationAnalyzerTest
 		final Map< String, Boolean > isIntFeature = analyzer.getIsIntFeature();
 		model.getFeatureModel().declareEdgeFeatures( features, featureNames, featureShortNames, featureDimensions, isIntFeature );
 		// Process model
-		analyzer.process( model.getTrackModel().edgeSet(), model );
+		analyzer.process( model.getTrackModel().edgeSet(), model, null );
 
 		// Prepare listener
 		model.addModelChangeListener( new ModelChangeListener()
@@ -159,7 +160,7 @@ public class EdgeTimeAndLocationAnalyzerTest
 				if ( analyzer.isLocal() )
 				{
 
-					analyzer.process( edgesToUpdate, model );
+					analyzer.process( edgesToUpdate, model, null );
 
 				}
 				else
@@ -172,7 +173,7 @@ public class EdgeTimeAndLocationAnalyzerTest
 						final Integer motherTrackID = model.getTrackModel().trackIDOf( edge );
 						globalEdgesToUpdate.addAll( model.getTrackModel().trackEdges( motherTrackID ) );
 					}
-					analyzer.process( globalEdgesToUpdate, model );
+					analyzer.process( globalEdgesToUpdate, model, null );
 				}
 			}
 		} );
@@ -202,11 +203,11 @@ public class EdgeTimeAndLocationAnalyzerTest
 		private Collection< DefaultWeightedEdge > edges;
 
 		@Override
-		public void process( final Collection< DefaultWeightedEdge > lEdges, final Model model )
+		public void process( final Collection< DefaultWeightedEdge > lEdges, final Model model, final Settings settings )
 		{
 			this.hasBeenRun = true;
 			this.edges = lEdges;
-			super.process( lEdges, model );
+			super.process( lEdges, model, settings );
 		}
 	}
 }

@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.ModelChangeEvent;
 import fiji.plugin.trackmate.ModelChangeListener;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.edges.EdgeTargetAnalyzer;
 
@@ -99,7 +100,7 @@ public class EdgeTargetAnalyzerTest
 	{
 		// Process model
 		final EdgeTargetAnalyzer analyzer = new EdgeTargetAnalyzer();
-		analyzer.process( model.getTrackModel().edgeSet(), model );
+		analyzer.process( model.getTrackModel().edgeSet(), model, null );
 
 		// Collect features
 		for ( final DefaultWeightedEdge edge : model.getTrackModel().edgeSet() )
@@ -115,7 +116,7 @@ public class EdgeTargetAnalyzerTest
 	{
 		// Initial calculation
 		final TestEdgeTargetAnalyzer analyzer = new TestEdgeTargetAnalyzer();
-		analyzer.process( model.getTrackModel().edgeSet(), model );
+		analyzer.process( model.getTrackModel().edgeSet(), model, null );
 
 		// Prepare listener
 		model.addModelChangeListener( new ModelChangeListener()
@@ -134,7 +135,7 @@ public class EdgeTargetAnalyzerTest
 				if ( analyzer.isLocal() )
 				{
 
-					analyzer.process( edgesToUpdate, model );
+					analyzer.process( edgesToUpdate, model, null );
 
 				}
 				else
@@ -147,7 +148,7 @@ public class EdgeTargetAnalyzerTest
 						final Integer motherTrackID = model.getTrackModel().trackIDOf( edge );
 						globalEdgesToUpdate.addAll( model.getTrackModel().trackEdges( motherTrackID ) );
 					}
-					analyzer.process( globalEdgesToUpdate, model );
+					analyzer.process( globalEdgesToUpdate, model, null );
 				}
 			}
 		} );
@@ -182,11 +183,11 @@ public class EdgeTargetAnalyzerTest
 		private Collection< DefaultWeightedEdge > edges;
 
 		@Override
-		public void process( final Collection< DefaultWeightedEdge > lEdges, final Model model )
+		public void process( final Collection< DefaultWeightedEdge > lEdges, final Model model, final Settings settings )
 		{
 			this.hasBeenRun = true;
 			this.edges = lEdges;
-			super.process( lEdges, model );
+			super.process( lEdges, model, settings );
 		}
 
 	}

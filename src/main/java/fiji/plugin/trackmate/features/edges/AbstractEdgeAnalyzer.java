@@ -37,6 +37,7 @@ import org.scijava.plugin.Plugin;
 
 import fiji.plugin.trackmate.Dimension;
 import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.util.Threads;
 
 /**
@@ -175,7 +176,7 @@ public abstract class AbstractEdgeAnalyzer implements EdgeAnalyzer
 	}
 
 	@Override
-	public void process( final Collection< DefaultWeightedEdge > edges, final Model model )
+	public void process( final Collection< DefaultWeightedEdge > edges, final Model model, final Settings settings )
 	{
 		if ( edges.isEmpty() )
 			return;
@@ -192,7 +193,7 @@ public abstract class AbstractEdgeAnalyzer implements EdgeAnalyzer
 				@Override
 				public Void call() throws Exception
 				{
-					analyze( edge, model );
+					analyze( edge, model, settings );
 					return null;
 				}
 			};
@@ -217,5 +218,5 @@ public abstract class AbstractEdgeAnalyzer implements EdgeAnalyzer
 		processingTime = end - start;
 	}
 
-	protected abstract void analyze( final DefaultWeightedEdge edge, final Model model );
+	protected abstract void analyze( final DefaultWeightedEdge edge, final Model model, final Settings settings );
 }

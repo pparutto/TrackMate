@@ -34,6 +34,7 @@ import org.scijava.plugin.Plugin;
 
 import fiji.plugin.trackmate.Dimension;
 import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.features.edges.EdgeAnalyzer;
 
 @Plugin( type = EdgeAnalyzer.class )
@@ -144,7 +145,7 @@ public class ManualEdgeColorAnalyzer implements EdgeAnalyzer
 	}
 
 	@Override
-	public void process( final Collection< DefaultWeightedEdge > edges, final Model model )
+	public void process( final Collection< DefaultWeightedEdge > edges, final Model model, final Settings settings )
 	{}
 
 	@Override
