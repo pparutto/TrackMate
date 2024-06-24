@@ -1,4 +1,4 @@
-package fiji.plugin.trackmate.tracking.sparselap.costfunction;
+package fiji.plugin.trackmate.tracking.jaqaman.costfunction;
 
 import java.io.FileInputStream;
 

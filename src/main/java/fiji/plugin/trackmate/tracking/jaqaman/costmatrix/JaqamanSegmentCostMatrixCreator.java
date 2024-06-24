@@ -39,8 +39,8 @@ import static fiji.plugin.trackmate.util.TMUtils.checkMapKeys;
 import static fiji.plugin.trackmate.util.TMUtils.checkParameter;
 
 import fiji.plugin.trackmate.Spot;
-import fiji.plugin.trackmate.tracking.sparselap.costfunction.ComponentDistancesTime;
-import fiji.plugin.trackmate.tracking.sparselap.costfunction.ReachableDistCostFunctionTime;
+import fiji.plugin.trackmate.tracking.jaqaman.costfunction.ComponentDistancesTime;
+import fiji.plugin.trackmate.tracking.jaqaman.costfunction.ReachableDistCostFunctionTime;
 import fiji.plugin.trackmate.tracking.jaqaman.costfunction.CostFunction;
 import fiji.plugin.trackmate.tracking.jaqaman.costfunction.FeaturePenaltyCostFunction;
 import fiji.plugin.trackmate.tracking.jaqaman.costfunction.SquareDistCostFunction;
