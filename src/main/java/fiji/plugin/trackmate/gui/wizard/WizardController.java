@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -42,6 +42,7 @@ import org.scijava.Cancelable;
 
 import fiji.plugin.trackmate.gui.wizard.TransitionAnimator.Direction;
 import fiji.plugin.trackmate.util.EverythingDisablerAndReenabler;
+import fiji.plugin.trackmate.util.Threads;
 
 public class WizardController
 {
@@ -143,7 +144,7 @@ public class WizardController
 
 		current.aboutToHidePanel();
 		final WizardPanelDescriptor next = sequence.next();
-		if ( null == next)
+		if ( null == next )
 			return;
 
 		next.targetPanel.setSize( current.targetPanel.getSize() );
@@ -156,7 +157,7 @@ public class WizardController
 	protected void cancel()
 	{
 		final Cancelable cancelable = sequence.current().getCancelable();
-		if (null != cancelable)
+		if ( null != cancelable )
 			cancelable.cancel( "User pressed cancel button." );
 	}
 
@@ -174,36 +175,31 @@ public class WizardController
 		if ( null == runnable )
 			return;
 
-		final EverythingDisablerAndReenabler reenabler = new EverythingDisablerAndReenabler(
-				wizardPanel.panelButtons, new Class[] { JLabel.class } );
-		new Thread( "Wizard exec thread" )
+		final EverythingDisablerAndReenabler reenabler = new EverythingDisablerAndReenabler( wizardPanel.panelButtons, new Class[] { JLabel.class } );
+		Threads.run( "Wizard exec thread", () ->
 		{
-			@Override
-			public void run()
+			try
 			{
-				try
-				{
-					reenabler.disable();
-					// Wait for the animation to finish.
-					Thread.sleep( 200 );
-					wizardPanel.btnNext.setVisible( false );
-					wizardPanel.btnCancel.setVisible( true );
-					wizardPanel.btnCancel.setEnabled( true );
-					runnable.run();
-				}
-				catch ( final InterruptedException e )
-				{
-					e.printStackTrace();
-				}
-				finally
-				{
-					wizardPanel.btnCancel.setVisible( false);
-					wizardPanel.btnNext.setVisible( true );
-					wizardPanel.btnNext.requestFocusInWindow();
-					reenabler.reenable();
-				}
-			};
-		}.start();
+				reenabler.disable();
+				// Wait for the animation to finish.
+				Thread.sleep( 200 );
+				wizardPanel.btnNext.setVisible( false );
+				wizardPanel.btnCancel.setVisible( true );
+				wizardPanel.btnCancel.setEnabled( true );
+				runnable.run();
+			}
+			catch ( final InterruptedException e )
+			{
+				e.printStackTrace();
+			}
+			finally
+			{
+				wizardPanel.btnCancel.setVisible( false );
+				wizardPanel.btnNext.setVisible( true );
+				wizardPanel.btnNext.requestFocusInWindow();
+				reenabler.reenable();
+			}
+		} );
 	}
 
 	public void init()
@@ -229,7 +225,7 @@ public class WizardController
 		wizardPanel.btnResume.setVisible( true );
 
 		display( saveDescriptor, sequence.current(), Direction.BOTTOM );
-		new Thread( () -> {
+		Threads.run( () -> {
 			try
 			{
 				Thread.sleep( 250 );
@@ -240,7 +236,7 @@ public class WizardController
 			}
 			saveDescriptor.aboutToDisplayPanel();
 			saveDescriptor.displayingPanel();
-		} ).start();
+		} );
 	}
 
 	protected void resume()

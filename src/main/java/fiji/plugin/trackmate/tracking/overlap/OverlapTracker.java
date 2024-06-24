@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -33,7 +33,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -46,6 +45,7 @@ import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
 import fiji.plugin.trackmate.SpotRoi;
 import fiji.plugin.trackmate.tracking.SpotTracker;
+import fiji.plugin.trackmate.util.Threads;
 import math.geom2d.AffineTransform2D;
 import math.geom2d.Point2D;
 import math.geom2d.conic.Circle2D;
@@ -60,8 +60,7 @@ public class OverlapTracker extends MultiThreadedBenchmarkAlgorithm implements S
 
 	public static enum IoUCalculation
 	{
-		FAST( "Fast", "IoU is calculated using the bounding box of the spot." ),
-		PRECISE( "Precise", "IoU is calculated over the shape of the spot ROI." );
+		FAST( "Fast", "IoU is calculated using the bounding box of the spot." ), PRECISE( "Precise", "IoU is calculated over the shape of the spot ROI." );
 
 		private final String str;
 
@@ -207,7 +206,7 @@ public class OverlapTracker extends MultiThreadedBenchmarkAlgorithm implements S
 			if ( sourceGeometries.isEmpty() || targetGeometries.isEmpty() )
 				continue;
 
-			final ExecutorService executors = Executors.newFixedThreadPool( numThreads );
+			final ExecutorService executors = Threads.newFixedThreadPool( numThreads );
 			final List< Future< IoULink > > futures = new ArrayList<>();
 
 			// Submit work.
@@ -310,7 +309,7 @@ public class OverlapTracker extends MultiThreadedBenchmarkAlgorithm implements S
 		{
 			final double[] xcoords = roi.toPolygonX( 1., 0., xc, 1. );
 			final double[] ycoords = roi.toPolygonY( 1., 0., yc, 1. );
-			poly =  new SimplePolygon2D( xcoords, ycoords );
+			poly = new SimplePolygon2D( xcoords, ycoords );
 		}
 		return poly.transform( AffineTransform2D.createScaling( new Point2D( xc, yc ), scale, scale ) );
 	}
@@ -345,7 +344,6 @@ public class OverlapTracker extends MultiThreadedBenchmarkAlgorithm implements S
 		private final Map< Spot, Polygon2D > sourceGeometries;
 
 		private final double minIoU;
-
 
 		public FindBestSourceTask( final Spot target, final Polygon2D targetPoly, final Map< Spot, Polygon2D > sourceGeometries, final double minIoU )
 		{

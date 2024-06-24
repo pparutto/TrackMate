@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -21,7 +21,8 @@
  */
 package fiji.plugin.trackmate;
 
-public enum Dimension {
+public enum Dimension
+{
 	NONE,
 	QUALITY,
 	COST,
@@ -29,11 +30,12 @@ public enum Dimension {
 	INTENSITY_SQUARED,
 	POSITION,
 	VELOCITY,
-	LENGTH,   // we separate length and position so that x,y,z are plotted on a different graph from spot sizes
-	AREA,
-	TIME,
-	ANGLE,
-	RATE, // count per frames
-	ANGLE_RATE,
-	STRING; // for non-numeric features
+	LENGTH,
+	AREA, TIME, ANGLE, RATE, // count per frames
+	ANGLE_RATE, STRING; // for non-numeric features
+
+	/*
+	 * We separated length and position so that x,y,z are plotted on a different
+	 * graph from spot sizes.
+	 */
 }

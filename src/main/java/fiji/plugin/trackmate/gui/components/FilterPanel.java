@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -40,7 +40,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Map;
-import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -55,6 +54,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JRadioButton;
+import javax.swing.UIManager;
 import javax.swing.border.LineBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -69,6 +69,8 @@ import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 
 import fiji.plugin.trackmate.features.FeatureFilter;
+import fiji.plugin.trackmate.gui.GuiUtils;
+import fiji.plugin.trackmate.util.Threads;
 import fiji.plugin.trackmate.util.TMUtils;
 import fiji.util.NumberParser;
 
@@ -86,7 +88,15 @@ public class FilterPanel extends javax.swing.JPanel
 
 	static final Font SMALL_FONT = FONT.deriveFont( 10f );
 
-	private static final Color annotationColor = new java.awt.Color( 252, 117, 0 );
+	private static final Color annotationColor;
+	static
+	{
+		final Color bgColor = UIManager.getColor( "Panel.background" );
+		final boolean bgIsDark = GuiUtils.colorDistance( Color.WHITE, bgColor ) > 0.5;
+		annotationColor = bgIsDark
+				? new java.awt.Color( 252, 117, 0 ).brighter()
+				: new java.awt.Color( 252, 117, 0 );
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -546,7 +556,7 @@ public class FilterPanel extends javax.swing.JPanel
 			if ( ex == null )
 			{
 				// Create new waiting line
-				ex = Executors.newSingleThreadScheduledExecutor();
+				ex = Threads.newSingleThreadScheduledExecutor();
 				future = ex.schedule( command, WAIT_DELAY, TimeUnit.SECONDS );
 			}
 			else

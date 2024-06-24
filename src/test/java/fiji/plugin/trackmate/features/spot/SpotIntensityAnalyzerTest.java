@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -59,7 +59,7 @@ public class SpotIntensityAnalyzerTest
 	{
 		final long[] dims = new long[] { ( long ) ( 2 * CENTER[ 0 ] / CALIBRATION[ 0 ] ), ( long ) ( 2 * CENTER[ 1 ] / CALIBRATION[ 1 ] ) };
 		final Img< UnsignedShortType > img = ArrayImgs.unsignedShorts( dims );
-		img2D = new ImgPlus< >( img, "2D", new AxisType[] { Axes.X, Axes.Y }, new double[] { CALIBRATION[ 0 ], CALIBRATION[ 1 ] } );
+		img2D = new ImgPlus<>( img, "2D", new AxisType[] { Axes.X, Axes.Y }, new double[] { CALIBRATION[ 0 ], CALIBRATION[ 1 ] } );
 
 		// We paint MANUALLY a square in the middle of the image
 		final RandomAccess< UnsignedShortType > ra = img.randomAccess();
@@ -98,7 +98,7 @@ public class SpotIntensityAnalyzerTest
 		test.setUp();
 
 		final Spot tmpSpot = new Spot( CENTER[ 0 ], CENTER[ 1 ], CENTER[ 2 ], RADIUS, -1d );
-		final SpotNeighborhood< UnsignedShortType > disc = new SpotNeighborhood< >( tmpSpot, test.img2D );
+		final SpotNeighborhood< UnsignedShortType > disc = new SpotNeighborhood<>( tmpSpot, test.img2D );
 		for ( final UnsignedShortType pixel : disc )
 		{
 			pixel.set( 1500 );

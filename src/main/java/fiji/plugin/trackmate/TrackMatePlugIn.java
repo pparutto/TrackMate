@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -24,8 +24,8 @@ package fiji.plugin.trackmate;
 import static fiji.plugin.trackmate.gui.Icons.TRACKMATE_ICON;
 
 import javax.swing.JFrame;
-import javax.swing.UIManager;
-import javax.swing.UnsupportedLookAndFeelException;
+
+import org.scijava.object.ObjectService;
 
 import fiji.plugin.trackmate.gui.GuiUtils;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
@@ -33,6 +33,7 @@ import fiji.plugin.trackmate.gui.displaysettings.DisplaySettingsIO;
 import fiji.plugin.trackmate.gui.wizard.TrackMateWizardSequence;
 import fiji.plugin.trackmate.gui.wizard.WizardSequence;
 import fiji.plugin.trackmate.io.SettingsPersistence;
+import fiji.plugin.trackmate.util.TMUtils;
 import fiji.plugin.trackmate.visualization.TrackMateModelView;
 import fiji.plugin.trackmate.visualization.hyperstack.HyperStackDisplayer;
 import ij.IJ;
@@ -48,7 +49,7 @@ public class TrackMatePlugIn implements PlugIn
 	@Override
 	public void run( final String imagePath )
 	{
-		GuiUtils.setSystemLookAndFeel();
+//		GuiUtils.setSystemLookAndFeel();
 		final ImagePlus imp;
 		if ( imagePath != null && imagePath.length() > 0 )
 		{
@@ -171,6 +172,9 @@ public class TrackMatePlugIn implements PlugIn
 		model.setPhysicalUnits( spaceUnits, timeUnits );
 
 		final TrackMate trackmate = new TrackMate( model, settings );
+		ObjectService objectService = TMUtils.getContext().service( ObjectService.class );
+		if ( objectService != null )
+			objectService.addObject( trackmate );
 
 		// Set the num of threads from IJ prefs.
 		trackmate.setNumThreads( Prefs.getThreads() );
@@ -183,9 +187,9 @@ public class TrackMatePlugIn implements PlugIn
 		return DisplaySettingsIO.readUserDefault().copy( "CurrentDisplaySettings" );
 	}
 
-	public static void main( final String[] args ) throws ClassNotFoundException, InstantiationException, IllegalAccessException, UnsupportedLookAndFeelException
+	public static void main( final String[] args )
 	{
-		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
+//		GuiUtils.setSystemLookAndFeel();
 		ImageJ.main( args );
 //		new TrackMatePlugIn().run( "samples/Stack.tif" );
 //		new TrackMatePlugIn().run( "samples/Merged.tif" );

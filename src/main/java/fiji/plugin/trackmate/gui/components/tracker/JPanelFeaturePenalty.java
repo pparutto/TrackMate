@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -55,8 +55,7 @@ public class JPanelFeaturePenalty extends javax.swing.JPanel
 		this.setSize( 280, 40 );
 		this.setLayout( null );
 
-		final ComboBoxModel< String > jComboBoxFeatureModel = new DefaultComboBoxModel<>(
-				TMUtils.getArrayFromMaping( features, featureNames ).toArray( new String[] {} ) );
+		final ComboBoxModel< String > jComboBoxFeatureModel = new DefaultComboBoxModel<>( TMUtils.getArrayFromMaping( features, featureNames ).toArray( new String[] {} ) );
 		cmbboxFeature = new JComboBox<>();
 		this.add( cmbboxFeature );
 		cmbboxFeature.setModel( jComboBoxFeatureModel );

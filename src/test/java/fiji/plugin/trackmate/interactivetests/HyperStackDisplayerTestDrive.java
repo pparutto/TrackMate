@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -37,14 +37,16 @@ import fiji.plugin.trackmate.visualization.hyperstack.HyperStackDisplayer;
 import fiji.plugin.trackmate.visualization.trackscheme.TrackScheme;
 import ij.ImagePlus;
 
-public class HyperStackDisplayerTestDrive {
+public class HyperStackDisplayerTestDrive
+{
 
-	public static void main(final String[] args) {
+	public static void main( final String[] args )
+	{
 
-		ij.ImageJ.main(args);
+		ij.ImageJ.main( args );
 
-		final File file = new File(AppUtils.getBaseDirectory(TrackMate.class), "samples/FakeTracks.xml");
-		final TmXmlReader reader = new TmXmlReader(file);
+		final File file = new File( AppUtils.getBaseDirectory( TrackMate.class ), "samples/FakeTracks.xml" );
+		final TmXmlReader reader = new TmXmlReader( file );
 
 		final Model model = reader.getModel();
 		final ImagePlus imp = reader.readImage();
@@ -54,8 +56,8 @@ public class HyperStackDisplayerTestDrive {
 		ds.setSpotShowName( true );
 		ds.setTrackDisplayMode( TrackDisplayMode.LOCAL_BACKWARD );
 
-		new ModelFeatureUpdater(model, settings);
-		final SelectionModel selectionModel = new SelectionModel(model);
+		new ModelFeatureUpdater( model, settings );
+		final SelectionModel selectionModel = new SelectionModel( model );
 		final HyperStackDisplayer displayer = new HyperStackDisplayer( model, selectionModel, imp, ds );
 		displayer.render();
 

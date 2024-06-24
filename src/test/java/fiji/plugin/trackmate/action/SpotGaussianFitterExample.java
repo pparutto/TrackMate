@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -52,7 +52,8 @@ public class SpotGaussianFitterExample
 	{
 		UIManager.setLookAndFeel( UIManager.getSystemLookAndFeelClassName() );
 		ImageJ.main( args );
-//		final TmXmlReader reader = new TmXmlReader( new File( "samples/MAX_1.5x-timelqpe_2021-04-02-1.xml" ) );
+		// final TmXmlReader reader = new TmXmlReader( new File(
+		// "samples/MAX_1.5x-timelqpe_2021-04-02-1.xml" ) );
 		final TmXmlReader reader = new TmXmlReader( new File( "samples/FakeTracks.xml" ) );
 		final Model model = reader.getModel();
 		final ImagePlus imp = reader.readImage();

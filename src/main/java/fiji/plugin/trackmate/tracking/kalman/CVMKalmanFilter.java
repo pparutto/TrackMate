@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -198,7 +198,6 @@ public class CVMKalmanFilter
 	{
 		return Math.sqrt( ( P.get( 3, 3 ) + P.get( 4, 4 ) + P.get( 5, 5 ) ) / 3d );
 	}
-
 
 	/**
 	 * Returns the number of occlusion events that occurred since the

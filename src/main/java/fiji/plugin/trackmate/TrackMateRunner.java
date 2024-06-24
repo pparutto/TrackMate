@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -204,7 +204,7 @@ public class TrackMateRunner extends TrackMatePlugIn
 	@Override
 	public void run( String arg )
 	{
-		GuiUtils.setSystemLookAndFeel();
+//		GuiUtils.setSystemLookAndFeel();
 		logger = new LogRecorder( Logger.IJ_LOGGER );
 
 

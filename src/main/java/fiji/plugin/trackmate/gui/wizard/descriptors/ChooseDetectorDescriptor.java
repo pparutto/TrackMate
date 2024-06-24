@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -60,7 +60,7 @@ public class ChooseDetectorDescriptor extends WizardPanelDescriptor
 			key = trackmate.getSettings().detectorFactory.getKey();
 
 		@SuppressWarnings( { "rawtypes", "unchecked" } )
-		final ModuleChooserPanel< SpotDetectorFactoryBase > component = (fiji.plugin.trackmate.gui.components.ModuleChooserPanel< SpotDetectorFactoryBase > ) targetPanel;
+		final ModuleChooserPanel< SpotDetectorFactoryBase > component = ( fiji.plugin.trackmate.gui.components.ModuleChooserPanel< SpotDetectorFactoryBase > ) targetPanel;
 		component.setSelectedModuleKey( key );
 	}
 
@@ -75,7 +75,7 @@ public class ChooseDetectorDescriptor extends WizardPanelDescriptor
 	{
 		// Configure the detector provider with choice made in panel
 		@SuppressWarnings( { "rawtypes", "unchecked" } )
-		final ModuleChooserPanel< SpotDetectorFactoryBase > component = (fiji.plugin.trackmate.gui.components.ModuleChooserPanel< SpotDetectorFactoryBase > ) targetPanel;
+		final ModuleChooserPanel< SpotDetectorFactoryBase > component = ( fiji.plugin.trackmate.gui.components.ModuleChooserPanel< SpotDetectorFactoryBase > ) targetPanel;
 		final String detectorKey = component.getSelectedModuleKey();
 
 		// Configure trackmate settings with selected detector
@@ -83,9 +83,7 @@ public class ChooseDetectorDescriptor extends WizardPanelDescriptor
 
 		if ( null == factory )
 		{
-			trackmate.getModel().getLogger().error( "[ChooseDetectorDescriptor] Cannot find detector named "
-					+ detectorKey
-					+ " in current TrackMate modules." );
+			trackmate.getModel().getLogger().error( "[ChooseDetectorDescriptor] Cannot find detector named " + detectorKey + " in current TrackMate modules." );
 			return;
 		}
 		trackmate.getSettings().detectorFactory = factory;

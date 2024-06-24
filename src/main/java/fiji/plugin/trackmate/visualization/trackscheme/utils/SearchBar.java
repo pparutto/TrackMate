@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -67,7 +67,6 @@ public class SearchBar extends JTextField
 
 	private final TrackMateModelView view;
 
-
 	/**
 	 * Creates new form SearchBox
 	 * 
@@ -120,23 +119,23 @@ public class SearchBar extends JTextField
 	}
 
 	/**
-	 * @param evt  
+	 * @param evt
 	 */
 	private void searchBoxFocusGained( final java.awt.event.FocusEvent evt )
 	{
 		setFont( NORMAL_FONT );
 		setFont( getFont().deriveFont( Font.PLAIN ) );
-//		setText( null );
+		// setText( null );
 	}
 
 	/**
-	 * @param evt  
+	 * @param evt
 	 */
 	private void searchBoxFocusLost( final java.awt.event.FocusEvent evt )
 	{
 		setFont( NORMAL_FONT );
 		setFont( getFont().deriveFont( Font.ITALIC ) );
-//		setText( "Search" );
+		// setText( "Search" );
 	}
 
 	private class SearchAction implements PropertyChangeListener, Iterator< Spot >

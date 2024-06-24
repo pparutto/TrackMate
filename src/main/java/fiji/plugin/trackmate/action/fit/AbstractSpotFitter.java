@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -27,13 +27,13 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
 
 import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.util.Threads;
 import fiji.plugin.trackmate.util.TMUtils;
 import ij.ImagePlus;
 import net.imagej.ImgPlus;
@@ -88,7 +88,7 @@ public abstract class AbstractSpotFitter implements SpotFitter
 		logger.log( String.format( "Starting fitting with %d threads.\n", numThreads ) );
 		logger.setStatus( "Spot fitting" );
 		final long start = System.currentTimeMillis();
-		final ExecutorService executorService = Executors.newFixedThreadPool( numThreads );
+		final ExecutorService executorService = Threads.newFixedThreadPool( numThreads );
 		final List< Future< ? > > futures = new ArrayList<>();
 		for ( final Spot spot : spots )
 			futures.add( executorService.submit( () -> fit( spot ) ) );

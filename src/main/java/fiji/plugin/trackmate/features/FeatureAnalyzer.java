@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -33,23 +33,22 @@ public interface FeatureAnalyzer extends TrackMateModule
 	/**
 	 * Returns the list of features this analyzer can compute.
 	 */
-	public List<String> getFeatures();
+	public List< String > getFeatures();
 
 	/**
-	 * Returns the map of short names for any feature the analyzer
-	 * can compute.
+	 * Returns the map of short names for any feature the analyzer can compute.
 	 */
-	public Map<String, String> getFeatureShortNames();
+	public Map< String, String > getFeatureShortNames();
 
 	/**
 	 * Returns the map of names for any feature this analyzer can compute.
 	 */
-	public Map<String, String> getFeatureNames();
+	public Map< String, String > getFeatureNames();
 
 	/**
 	 * Returns the map of feature dimension this analyzer can compute.
 	 */
-	public Map<String, Dimension> getFeatureDimensions();
+	public Map< String, Dimension > getFeatureDimensions();
 
 	/**
 	 * Returns the map that states whether the key feature is a feature that

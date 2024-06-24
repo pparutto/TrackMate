@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -52,8 +52,7 @@ public class TrackSchemeKeyboardHandler
 	public void installKeyboardActions( final JComponent component )
 	{
 		final InputMap inputMap = getInputMap( JComponent.WHEN_FOCUSED );
-		SwingUtilities.replaceUIInputMap( component,
-				JComponent.WHEN_FOCUSED, inputMap );
+		SwingUtilities.replaceUIInputMap( component, JComponent.WHEN_FOCUSED, inputMap );
 		SwingUtilities.replaceUIActionMap( component, createActionMap() );
 	}
 
@@ -62,7 +61,7 @@ public class TrackSchemeKeyboardHandler
 		final InputMap map;
 		if ( condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT )
 			map = ( InputMap ) UIManager.get( "ScrollPane.ancestorInputMap" );
-		else 
+		else
 			map = new InputMap();
 
 		map.put( KeyStroke.getKeyStroke( "F2" ), "edit" );

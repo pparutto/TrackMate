@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -29,13 +29,15 @@ import java.util.EventListener;
 /**
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt; - Jan 29, 2011
  */
-public interface SelectionChangeListener extends EventListener {
+public interface SelectionChangeListener extends EventListener
+{
 
 	/**
 	 * Called whenever the value of the selection changes.
-	 * @param event  the event that characterizes the change.
+	 * 
+	 * @param event
+	 *            the event that characterizes the change.
 	 */
-	public void selectionChanged(SelectionChangeEvent event);
-
+	public void selectionChanged( SelectionChangeEvent event );
 
 }

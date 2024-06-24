@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -41,5 +41,5 @@ import net.imglib2.type.numeric.RealType;
  * @author Jean-Yves Tinevez &lt;jeanyves.tinevez@gmail.com&gt; 2010 - 2012
  * 
  */
-public interface SpotDetector< T extends RealType< T > & NativeType< T >> extends OutputAlgorithm< List< Spot >>, Benchmark
+public interface SpotDetector< T extends RealType< T > & NativeType< T > > extends OutputAlgorithm< List< Spot > >, Benchmark
 {}

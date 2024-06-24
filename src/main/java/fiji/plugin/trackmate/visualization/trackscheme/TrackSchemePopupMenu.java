@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -95,7 +95,6 @@ public class TrackSchemePopupMenu extends JPopupMenu
 			spot.putFeature( ManualSpotColorAnalyzerFactory.FEATURE, value );
 		}
 	}
-
 
 	private void selectWholeTrack( final ArrayList< mxCell > vertices, final ArrayList< mxCell > edges )
 	{
@@ -194,6 +193,11 @@ public class TrackSchemePopupMenu extends JPopupMenu
 		trackScheme.removeSelectedCells();
 	}
 
+	private void removeLinks()
+	{
+		trackScheme.removeSelectedLinkCells();
+	}
+
 	/*
 	 * MENU COMPOSITION
 	 */
@@ -204,8 +208,8 @@ public class TrackSchemePopupMenu extends JPopupMenu
 
 		// Build selection categories
 		final Object[] selection = trackScheme.getGraph().getSelectionCells();
-		final ArrayList< mxCell > vertices = new ArrayList< >();
-		final ArrayList< mxCell > edges = new ArrayList< >();
+		final ArrayList< mxCell > vertices = new ArrayList<>();
+		final ArrayList< mxCell > edges = new ArrayList<>();
 		for ( final Object obj : selection )
 		{
 			final mxCell lCell = ( mxCell ) obj;
@@ -345,7 +349,6 @@ public class TrackSchemePopupMenu extends JPopupMenu
 			} );
 		}
 
-
 		if ( edges.size() > 0 && vertices.size() > 0 )
 		{
 			final String str = "Manual color for " + ( vertices.size() == 1 ? " one spot and " : vertices.size() + " spots and " ) + ( edges.size() == 1 ? " one edge" : edges.size() + " edges" );
@@ -368,8 +371,7 @@ public class TrackSchemePopupMenu extends JPopupMenu
 				}
 			} );
 		}
-		
-		
+
 		add( new AbstractAction( "Clear manual color of selection" )
 		{
 			@Override
@@ -385,7 +387,7 @@ public class TrackSchemePopupMenu extends JPopupMenu
 					final DefaultWeightedEdge edge = trackScheme.getGraph().getEdgeFor( mxCell );
 					trackScheme.getModel().getFeatureModel().removeEdgeFeature( edge, ManualEdgeColorAnalyzer.FEATURE );
 				}
-				
+
 				SwingUtilities.invokeLater( new Runnable()
 				{
 					@Override
@@ -396,7 +398,6 @@ public class TrackSchemePopupMenu extends JPopupMenu
 				} );
 			}
 		} );
-
 
 		// Remove
 		if ( selection.length > 0 )
@@ -411,6 +412,16 @@ public class TrackSchemePopupMenu extends JPopupMenu
 				}
 			};
 			add( removeAction );
+			final Action removeLinkAction = new AbstractAction( "Remove only links" )
+			{
+				@Override
+				public void actionPerformed( final ActionEvent e )
+				{
+					removeLinks();
+				}
+			};
+			add( removeLinkAction );
+
 		}
 	}
 

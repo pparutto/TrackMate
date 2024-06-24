@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -65,18 +65,14 @@ public class LoadTrackMatePlugIn extends TrackMatePlugIn
 	@Override
 	public void run( final String filePath )
 	{
-		/*
-		 * I can't stand the metal look. If this is a problem, contact me
-		 * (jeanyves.tinevez at gmail dot com)
-		 */
-		GuiUtils.setSystemLookAndFeel();
+//		GuiUtils.setSystemLookAndFeel();
 
 		final Logger logger = Logger.IJ_LOGGER;
 		File file;
 		if ( null == filePath || filePath.length() == 0 )
 		{
 			final Settings lastUsedSettings = SettingsPersistence.readLastUsedSettings( null, logger );
-			file = TMUtils.proposeTrackMateSaveFile( lastUsedSettings, logger );
+			file = TMUtils.proposeTrackMateSaveFile( lastUsedSettings, Logger.VOID_LOGGER );
 			file = IOUtils.askForFileForLoading( file, "Load a TrackMate XML file", null, logger );
 			if ( null == file )
 				return;
@@ -143,9 +139,15 @@ public class LoadTrackMatePlugIn extends TrackMatePlugIn
 		 * Read settings.
 		 */
 
-		final Settings settings = reader.readSettings( imp );
+		Settings settings = reader.readSettings( imp );
 		if ( !reader.isReadingOk() )
 			logger.error( "Problem reading the settings:\n" + reader.getErrorMessage() );
+
+		if ( settings == null )
+		{
+			logger.error( "Problem reading the settings:\n" + "The file did not contain a settings element. Using default values." );
+			settings = new Settings( imp );
+		}
 
 		/*
 		 * Declare the analyzers that are in the settings to the model. This is
@@ -292,9 +294,10 @@ public class LoadTrackMatePlugIn extends TrackMatePlugIn
 	{
 		ImageJ.main( args );
 		final LoadTrackMatePlugIn plugIn = new LoadTrackMatePlugIn();
-		plugIn.run( "samples/FakeTracks.xml" );
+		plugIn.run( null );
+//		plugIn.run( "samples/FakeTracks.xml" );
 //		plugIn.run( "samples/MAX_Merged.xml" );
 //		plugIn.run( "c:/Users/tinevez/Development/TrackMateWS/TrackMate-Cellpose/samples/R2_multiC.xml" );
-//		plugIn.run( "/Users/tinevez/Projects/CCarabana/Data/113B_Day3/DUP_C3-20210122_113B_N1BcatTOM_day3_region3_each10min_zoom08_40x_FINAL.xml" );
+//		plugIn.run( "/Users/tinevez/Desktop/230901_DeltaRcsB-ZipA-mCh_timestep5min_Stage9_reg/230901_DeltaRcsB-ZipA-mCh_timestep5min_Stage9_reg_merge65.xml" );
 	}
 }

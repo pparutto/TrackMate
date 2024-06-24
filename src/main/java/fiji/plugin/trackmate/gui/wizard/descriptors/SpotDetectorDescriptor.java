@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -20,7 +20,6 @@
  * #L%
  */
 package fiji.plugin.trackmate.gui.wizard.descriptors;
-
 
 import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Settings;
@@ -51,7 +50,7 @@ public class SpotDetectorDescriptor extends WizardPanelDescriptor
 	{
 		final ConfigurationPanel configurationPanel = ( ConfigurationPanel ) targetPanel;
 		settings.detectorSettings = configurationPanel.getSettings();
-		
+
 		logger.log( "\nConfigured detector " );
 		logger.log( settings.detectorFactory.getName(), Logger.BLUE_COLOR );
 		logger.log( " with settings:\n" );

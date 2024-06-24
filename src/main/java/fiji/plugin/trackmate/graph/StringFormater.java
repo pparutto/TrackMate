@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,16 +22,18 @@
 package fiji.plugin.trackmate.graph;
 
 /**
- * Interface for function that can build a human-readable string 
- * representation of an object
+ * Interface for function that can build a human-readable string representation
+ * of an object
+ * 
  * @author JeanYves
  *
  */
-public interface StringFormater<V> {
-	
+public interface StringFormater< V >
+{
+
 	/**
 	 * Convert the given instance to a string representation.
 	 */
-	public String toString(V instance);
+	public String toString( V instance );
 
 }

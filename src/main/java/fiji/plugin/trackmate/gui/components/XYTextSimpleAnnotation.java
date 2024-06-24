@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -34,58 +34,100 @@ import org.jfree.chart.event.AnnotationChangeEvent;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 
-public class XYTextSimpleAnnotation extends AbstractXYAnnotation {
-	
+public class XYTextSimpleAnnotation extends AbstractXYAnnotation
+{
+
 	private static final long serialVersionUID = 1L;
+
 	private float x, y;
+
 	private String text;
+
 	private Font font;
+
 	private Color color;
-	private ChartPanel chartPanel;
-	
-	
-	public XYTextSimpleAnnotation(ChartPanel chartPanel) {
-		this.chartPanel = chartPanel;
+
+	private final ChartPanel chartPanel;
+
+	private final boolean paintBackground;
+
+	public XYTextSimpleAnnotation( final ChartPanel chartPanel )
+	{
+		this( chartPanel, false );
 	}
-	
+
+	public XYTextSimpleAnnotation( final ChartPanel chartPanel, final boolean paintBackground )
+	{
+		this.chartPanel = chartPanel;
+		this.paintBackground = paintBackground;
+	}
+
 	/*
 	 * PUBLIC METHOD
 	 */
-	
-	
+
 	@Override
-	public void draw(Graphics2D g2, XYPlot plot, Rectangle2D dataArea,
-			ValueAxis domainAxis, ValueAxis rangeAxis, int rendererIndex,
-			PlotRenderingInfo info) {
-		
-		Rectangle2D box = chartPanel.getScreenDataArea();
-		float sx = (float) plot.getDomainAxis().valueToJava2D(x, box, plot.getDomainAxisEdge());
-		float maxXLim = (float) box.getWidth() - g2.getFontMetrics().stringWidth(text); 
-		if (sx > maxXLim) {
+	public void draw( 
+			final Graphics2D g2, 
+			final XYPlot plot, 
+			final Rectangle2D dataArea,
+			final ValueAxis domainAxis, 
+			final ValueAxis rangeAxis,
+			final int rendererIndex,
+			final PlotRenderingInfo info )
+	{
+
+		final Rectangle2D box = chartPanel.getScreenDataArea();
+		float sx = ( float ) plot.getDomainAxis().valueToJava2D( x, box, plot.getDomainAxisEdge() );
+		final int stringWidth = g2.getFontMetrics().stringWidth( text );
+		final float maxXLim = ( float ) box.getWidth() - stringWidth;
+		if ( sx > maxXLim )
 			sx = maxXLim;
+		if ( sx < box.getMinX() )
+			sx = ( float ) box.getMinX();
+
+		final float sy = ( float ) plot.getRangeAxis().valueToJava2D(
+				y, chartPanel.getScreenDataArea(), plot.getRangeAxisEdge() );
+		g2.setTransform( new AffineTransform() );
+
+		// Background.
+		if ( paintBackground )
+		{
+			g2.setColor( chartPanel.getBackground() );
+			final int height = g2.getFontMetrics().getHeight();
+			g2.fillRect(
+					( int ) ( sx - 0.1 * stringWidth ),
+					( int ) ( sy - 1.1 * height ),
+					( int ) ( 1.25 * stringWidth ),
+					( int ) ( 1.3 * height ) );
 		}
-		if (sx < box.getMinX()) {
-			sx = (float) box.getMinX();
-		}
-		
-		float sy = (float) plot.getRangeAxis().valueToJava2D(y, chartPanel.getScreenDataArea(), plot.getRangeAxisEdge());
-		g2.setTransform(new AffineTransform());
-		g2.setColor(color);
-		g2.setFont(font);
-		g2.drawString(text, sx, sy);
-	}
-	
-	public void setLocation(float x, float y) {
-		this.x = x;
-		this.y = y;
-		notifyListeners(new AnnotationChangeEvent(this, this));
-	}
-	
-	public void setText(String text) { this.text = text; }
-	public void setFont(Font font) { this.font = font;	}
-	public void setColor(Color color) {
-		this.color = color; 
-		notifyListeners(new AnnotationChangeEvent(this, this));
+
+		// Text.
+		g2.setColor( color );
+		g2.setFont( font );
+		g2.drawString( text, sx, sy );
 	}
 
+	public void setLocation( final float x, final float y )
+	{
+		this.x = x;
+		this.y = y;
+		notifyListeners( new AnnotationChangeEvent( this, this ) );
+	}
+
+	public void setText( final String text )
+	{
+		this.text = text;
+	}
+
+	public void setFont( final Font font )
+	{
+		this.font = font;
+	}
+
+	public void setColor( final Color color )
+	{
+		this.color = color;
+		notifyListeners( new AnnotationChangeEvent( this, this ) );
+	}
 }

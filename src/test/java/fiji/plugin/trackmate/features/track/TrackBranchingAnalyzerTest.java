@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -208,7 +208,7 @@ public class TrackBranchingAnalyzerTest
 	public final void testModelChanged()
 	{
 		// Copy old keys
-		final HashSet< Integer > oldKeys = new HashSet< >( model.getTrackModel().trackIDs( true ) );
+		final HashSet< Integer > oldKeys = new HashSet<>( model.getTrackModel().trackIDs( true ) );
 
 		// First analysis
 		final TestTrackBranchingAnalyzer analyzer = new TestTrackBranchingAnalyzer( model );
@@ -293,7 +293,7 @@ public class TrackBranchingAnalyzerTest
 	{
 
 		// Copy old keys
-		final HashSet< Integer > oldKeys = new HashSet< >( model.getTrackModel().trackIDs( true ) );
+		final HashSet< Integer > oldKeys = new HashSet<>( model.getTrackModel().trackIDs( true ) );
 
 		// First analysis
 		final TestTrackBranchingAnalyzer analyzer = new TestTrackBranchingAnalyzer( model );
@@ -334,7 +334,7 @@ public class TrackBranchingAnalyzerTest
 		}
 
 		// Get the last spot in time
-		final TreeSet< Spot > track = new TreeSet< >( Spot.frameComparator );
+		final TreeSet< Spot > track = new TreeSet<>( Spot.frameComparator );
 		track.addAll( model.getTrackModel().trackSpots( splittingTrackID ) );
 		final Spot lastSpot = track.last();
 
@@ -369,7 +369,7 @@ public class TrackBranchingAnalyzerTest
 	{
 
 		// Copy old keys
-		final HashSet< Integer > oldKeys = new HashSet< >( model.getTrackModel().trackIDs( true ) );
+		final HashSet< Integer > oldKeys = new HashSet<>( model.getTrackModel().trackIDs( true ) );
 
 		// First analysis
 		final TestTrackBranchingAnalyzer analyzer = new TestTrackBranchingAnalyzer( model );
@@ -440,7 +440,7 @@ public class TrackBranchingAnalyzerTest
 		private Collection< Integer > keys;
 
 		/**
-		 * @param model  
+		 * @param model
 		 */
 		public TestTrackBranchingAnalyzer( final Model model )
 		{

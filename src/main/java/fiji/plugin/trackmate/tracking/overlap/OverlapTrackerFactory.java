@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -37,6 +37,7 @@ import org.scijava.plugin.Plugin;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.SpotCollection;
 import fiji.plugin.trackmate.gui.components.ConfigurationPanel;
+import fiji.plugin.trackmate.gui.components.tracker.OverlapTrackerSettingsPanel;
 import fiji.plugin.trackmate.tracking.SpotTracker;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
 import fiji.plugin.trackmate.tracking.overlap.OverlapTracker.IoUCalculation;
@@ -105,8 +106,9 @@ public class OverlapTrackerFactory implements SpotTrackerFactory
 			+ "spot polygon. "
 			+ "<p> "
 			+ "<p> "
-			+ "Careful: this tracker is only suited to 2D images. It treats all the spots "
-			+ "as 2D objects. The Z dimension is ignored. "
+			+ "This tracker works in 2D and 3D. However in 3D, the IoU is computed from the "
+			+ "bounding-boxes regardless of the choice of the IoU computation method. "
+			+ "The <it>Precise</it> method is not implemented."
 			+ "</html>";
 
 	private String errorMessage;

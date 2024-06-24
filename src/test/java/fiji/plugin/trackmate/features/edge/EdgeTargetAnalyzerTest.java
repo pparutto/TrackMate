@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.ModelChangeEvent;
 import fiji.plugin.trackmate.ModelChangeListener;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.edges.EdgeTargetAnalyzer;
 
@@ -57,9 +58,9 @@ public class EdgeTargetAnalyzerTest
 	@Before
 	public void setUp()
 	{
-		edgeSource = new HashMap< >();
-		edgeTarget = new HashMap< >();
-		edgeCost = new HashMap< >();
+		edgeSource = new HashMap<>();
+		edgeTarget = new HashMap<>();
+		edgeCost = new HashMap<>();
 
 		model = new Model();
 		model.beginUpdate();
@@ -99,7 +100,7 @@ public class EdgeTargetAnalyzerTest
 	{
 		// Process model
 		final EdgeTargetAnalyzer analyzer = new EdgeTargetAnalyzer();
-		analyzer.process( model.getTrackModel().edgeSet(), model );
+		analyzer.process( model.getTrackModel().edgeSet(), model, null );
 
 		// Collect features
 		for ( final DefaultWeightedEdge edge : model.getTrackModel().edgeSet() )
@@ -115,7 +116,7 @@ public class EdgeTargetAnalyzerTest
 	{
 		// Initial calculation
 		final TestEdgeTargetAnalyzer analyzer = new TestEdgeTargetAnalyzer();
-		analyzer.process( model.getTrackModel().edgeSet(), model );
+		analyzer.process( model.getTrackModel().edgeSet(), model, null );
 
 		// Prepare listener
 		model.addModelChangeListener( new ModelChangeListener()
@@ -123,7 +124,7 @@ public class EdgeTargetAnalyzerTest
 			@Override
 			public void modelChanged( final ModelChangeEvent event )
 			{
-				final HashSet< DefaultWeightedEdge > edgesToUpdate = new HashSet< >();
+				final HashSet< DefaultWeightedEdge > edgesToUpdate = new HashSet<>();
 				for ( final DefaultWeightedEdge edge : event.getEdges() )
 				{
 					if ( event.getEdgeFlag( edge ) != ModelChangeEvent.FLAG_EDGE_REMOVED )
@@ -134,20 +135,20 @@ public class EdgeTargetAnalyzerTest
 				if ( analyzer.isLocal() )
 				{
 
-					analyzer.process( edgesToUpdate, model );
+					analyzer.process( edgesToUpdate, model, null );
 
 				}
 				else
 				{
 
 					// Get the all the edges of the track they belong to
-					final HashSet< DefaultWeightedEdge > globalEdgesToUpdate = new HashSet< >();
+					final HashSet< DefaultWeightedEdge > globalEdgesToUpdate = new HashSet<>();
 					for ( final DefaultWeightedEdge edge : edgesToUpdate )
 					{
 						final Integer motherTrackID = model.getTrackModel().trackIDOf( edge );
 						globalEdgesToUpdate.addAll( model.getTrackModel().trackEdges( motherTrackID ) );
 					}
-					analyzer.process( globalEdgesToUpdate, model );
+					analyzer.process( globalEdgesToUpdate, model, null );
 				}
 			}
 		} );
@@ -182,11 +183,11 @@ public class EdgeTargetAnalyzerTest
 		private Collection< DefaultWeightedEdge > edges;
 
 		@Override
-		public void process( final Collection< DefaultWeightedEdge > lEdges, final Model model )
+		public void process( final Collection< DefaultWeightedEdge > lEdges, final Model model, final Settings settings )
 		{
 			this.hasBeenRun = true;
 			this.edges = lEdges;
-			super.process( lEdges, model );
+			super.process( lEdges, model, settings );
 		}
 
 	}

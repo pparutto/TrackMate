@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -104,7 +104,6 @@ public class Settings
 	 * The lowest pixel Z position, <b>0-based</b>, of the volume to process.
 	 */
 	public int zend;
-
 
 	/**
 	 * The name of the detector factory to use. It will be used to generate
@@ -286,15 +285,15 @@ public class Settings
 			newSettings.trackerFactory = trackerFactory.copy();
 		newSettings.trackerSettings = new HashMap<>( trackerSettings );
 		newSettings.initialSpotFilterValue = initialSpotFilterValue;
-		
-		newSettings.spotFilters = new ArrayList<>( );
+
+		newSettings.spotFilters = new ArrayList<>();
 		for ( final FeatureFilter filter : spotFilters )
 			newSettings.spotFilters.add( new FeatureFilter( filter.feature, filter.value, filter.isAbove ) );
-		
+
 		newSettings.trackFilters = new ArrayList<>();
 		for ( final FeatureFilter filter : trackFilters )
 			newSettings.trackFilters.add( new FeatureFilter( filter.feature, filter.value, filter.isAbove ) );
-		
+
 		// Exception: we add all analyzers, regardless of the persistence.
 		newSettings.addAllAnalyzers();
 		return newSettings;

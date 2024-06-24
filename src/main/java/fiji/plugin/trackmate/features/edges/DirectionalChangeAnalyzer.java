@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -33,6 +33,7 @@ import org.scijava.plugin.Plugin;
 import fiji.plugin.trackmate.Dimension;
 import fiji.plugin.trackmate.FeatureModel;
 import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.Spot;
 
 @Plugin( type = EdgeAnalyzer.class )
@@ -63,7 +64,7 @@ public class DirectionalChangeAnalyzer extends AbstractEdgeAnalyzer
 	}
 
 	@Override
-	protected void analyze( final DefaultWeightedEdge edge, final Model model )
+	protected void analyze( final DefaultWeightedEdge edge, final Model model, final Settings settings )
 	{
 		final FeatureModel featureModel = model.getFeatureModel();
 		

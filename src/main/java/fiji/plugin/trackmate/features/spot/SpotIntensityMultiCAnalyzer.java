@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -27,6 +27,8 @@ import static fiji.plugin.trackmate.features.spot.SpotIntensityMultiCAnalyzerFac
 import static fiji.plugin.trackmate.features.spot.SpotIntensityMultiCAnalyzerFactory.MIN_INTENSITY;
 import static fiji.plugin.trackmate.features.spot.SpotIntensityMultiCAnalyzerFactory.STD_INTENSITY;
 import static fiji.plugin.trackmate.features.spot.SpotIntensityMultiCAnalyzerFactory.TOTAL_INTENSITY;
+
+import org.scijava.util.DoubleArray;
 
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.util.SpotUtil;
@@ -53,19 +55,46 @@ public class SpotIntensityMultiCAnalyzer< T extends RealType< T > > extends Abst
 	public void process( final Spot spot )
 	{
 		final IterableInterval< T > neighborhood = SpotUtil.iterable( spot, imgCT );
-		final double[] intensities = new double[ ( int ) neighborhood.size() ];
-		int n = 0;
+		final DoubleArray intensities = new DoubleArray();
+
 		for ( final T pixel : neighborhood )
 		{
 			final double val = pixel.getRealDouble();
-			intensities[ n++ ] = val;
+			if ( Double.isNaN( val ) )
+				continue;
+			intensities.addValue( val );
 		}
-		Util.quicksort( intensities );
-		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MEAN_INTENSITY, channel ), Double.valueOf( Util.average( intensities ) ) );
-		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MEDIAN_INTENSITY, channel ), Double.valueOf( intensities[ intensities.length / 2 ] ) );
-		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MIN_INTENSITY, channel ), Double.valueOf( intensities[ 0 ] ) );
-		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MAX_INTENSITY, channel ), Double.valueOf( intensities[ intensities.length - 1 ] ) );
-		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( TOTAL_INTENSITY, channel ), Double.valueOf( TMUtils.sum( intensities ) ) );
-		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( STD_INTENSITY, channel ), Double.valueOf( TMUtils.standardDeviation( intensities ) ) );
+
+		final double mean;
+		final double median;
+		final double max;
+		final double min;
+		final double sum;
+		final double std;
+		if ( intensities.isEmpty() )
+		{
+			mean = Double.NaN;
+			median = Double.NaN;
+			max = Double.NaN;
+			min = Double.NaN;
+			sum = Double.NaN;
+			std = Double.NaN;
+		}
+		else
+		{
+			Util.quicksort( intensities.getArray(), 0, intensities.size() - 1 );
+			mean = Double.valueOf( TMUtils.average( intensities ) );
+			median = Double.valueOf( intensities.getArray()[ intensities.size() / 2 ] );
+			min = Double.valueOf( intensities.getArray()[ 0 ] );
+			max = Double.valueOf( intensities.getArray()[ intensities.size() - 1 ] );
+			sum = Double.valueOf( TMUtils.sum( intensities ) );
+			std = Double.valueOf( TMUtils.standardDeviation( intensities ) );
+		}
+		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MEAN_INTENSITY, channel ), mean );
+		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MEDIAN_INTENSITY, channel ), median );
+		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MIN_INTENSITY, channel ), min );
+		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( MAX_INTENSITY, channel ), max );
+		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( TOTAL_INTENSITY, channel ), sum );
+		spot.putFeature( SpotIntensityMultiCAnalyzerFactory.makeFeatureKey( STD_INTENSITY, channel ), std );
 	}
 }

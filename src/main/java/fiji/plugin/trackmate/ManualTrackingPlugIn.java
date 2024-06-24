@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,7 +25,7 @@ import fiji.plugin.trackmate.detection.ManualDetectorFactory;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.gui.wizard.WizardSequence;
 import fiji.plugin.trackmate.gui.wizard.descriptors.ConfigureViewsDescriptor;
-import fiji.plugin.trackmate.tracking.ManualTrackerFactory;
+import fiji.plugin.trackmate.tracking.manual.ManualTrackerFactory;
 import ij.ImageJ;
 import ij.ImagePlus;
 

@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -22,11 +22,14 @@
 package fiji.plugin.trackmate.graph;
 
 /**
- * Interface for functions that return a new object, computed from two input arguments.
+ * Interface for functions that return a new object, computed from two input
+ * arguments.
+ * 
  * @author Jean-Yves Tinevez
  */
-public interface OutputFunction<E> {
-	
-	public E compute(E input1, E input2);
+public interface OutputFunction< E >
+{
+
+	public E compute( E input1, E input2 );
 
 }

@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,6 +25,7 @@ import static fiji.plugin.trackmate.gui.Fonts.FONT;
 import static fiji.plugin.trackmate.gui.Icons.EXECUTE_ICON;
 
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -41,6 +42,7 @@ import fiji.plugin.trackmate.action.TrackMateAction;
 import fiji.plugin.trackmate.action.TrackMateActionFactory;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.providers.ActionProvider;
+import fiji.plugin.trackmate.util.Threads;
 
 public class ActionChooserPanel extends ModuleChooserPanel< TrackMateActionFactory >
 {
@@ -50,6 +52,9 @@ public class ActionChooserPanel extends ModuleChooserPanel< TrackMateActionFacto
 	public ActionChooserPanel( final ActionProvider actionProvider, final TrackMate trackmate, final SelectionModel selectionModel, final DisplaySettings displaySettings )
 	{
 		super( actionProvider, "action", CaptureOverlayAction.KEY );
+		
+		final GridBagLayout gridBagLayout = ( GridBagLayout ) getLayout();
+		gridBagLayout.rowHeights = new int[] { 16, 27, 209, 200 };
 
 		final LogPanel logPanel = new LogPanel();
 		final GridBagConstraints gbcLogPanel = new GridBagConstraints();
@@ -75,36 +80,32 @@ public class ActionChooserPanel extends ModuleChooserPanel< TrackMateActionFacto
 			@Override
 			public void actionPerformed( final ActionEvent e )
 			{
-				new Thread( "TrackMate action thread" )
+				Threads.run( "TrackMate action thread", () ->
 				{
-					@Override
-					public void run()
+					try
 					{
-						try
+						executeButton.setEnabled( false );
+						final String actionKey = ActionChooserPanel.this.getSelectedModuleKey();
+						final TrackMateAction action = actionProvider.getFactory( actionKey ).create();
+						if ( null == action )
 						{
-							executeButton.setEnabled( false );
-							final String actionKey = ActionChooserPanel.this.getSelectedModuleKey();
-							final TrackMateAction action = actionProvider.getFactory( actionKey ).create();
-							if ( null == action )
-							{
-								logger.error( "Unknown action: " + actionKey + ".\n" );
-							}
-							else
-							{
-								action.setLogger( logger );
-								action.execute(
-										trackmate,
-										selectionModel,
-										displaySettings,
-										( JFrame ) SwingUtilities.getWindowAncestor( ActionChooserPanel.this ) );
-							}
+							logger.error( "Unknown action: " + actionKey + ".\n" );
 						}
-						finally
+						else
 						{
-							executeButton.setEnabled( true );
+							action.setLogger( logger );
+							action.execute(
+									trackmate,
+									selectionModel,
+									displaySettings,
+									( JFrame ) SwingUtilities.getWindowAncestor( ActionChooserPanel.this ) );
 						}
 					}
-				}.start();
+					finally
+					{
+						executeButton.setEnabled( true );
+					}
+				} );
 			}
 		} );
 	}

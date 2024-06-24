@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -40,8 +40,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.scijava.util.IntArray;
 
 /**
- * Loat LUTS for {@link Colormap}. Code adapted from what we did in
- * Mastodon.
+ * Loat LUTS for {@link Colormap}. Code adapted from what we did in Mastodon.
  *
  * @author Jean-Yves Tinevez 2019
  */

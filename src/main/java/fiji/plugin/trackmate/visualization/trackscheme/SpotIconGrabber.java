@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -52,7 +52,7 @@ import net.imglib2.view.Views;
  *
  * @author Jean-Yves Tinevez - Dec 2010 - 2017
  */
-public class SpotIconGrabber< T extends RealType< T >>
+public class SpotIconGrabber< T extends RealType< T > >
 {
 
 	private final ImgPlus< T > img;
@@ -147,7 +147,7 @@ public class SpotIconGrabber< T extends RealType< T >>
 		final T zeroType = img.firstElement().createVariable();
 		zeroType.setZero();
 
-		final OutOfBoundsConstantValueFactory< T, Img< T >> oobf = new OutOfBoundsConstantValueFactory<>( zeroType );
+		final OutOfBoundsConstantValueFactory< T, Img< T > > oobf = new OutOfBoundsConstantValueFactory<>( zeroType );
 		final RandomAccess< T > sourceCursor = Views.extend( img, oobf ).randomAccess();
 		final RandomAccess< T > targetCursor = crop.randomAccess();
 
@@ -194,7 +194,7 @@ public class SpotIconGrabber< T extends RealType< T >>
 
 		// Copy cropped view
 		final Img< T > crop = img.factory().create( interval );
-		final IntervalView< T > view = Views.zeroMin(Views.interval( Views.extendZero( img ), interval ) );
+		final IntervalView< T > view = Views.zeroMin( Views.interval( Views.extendZero( img ), interval ) );
 		final RandomAccess< T > sourceRA = view.randomAccess( view );
 		final Cursor< T > targetCursor = crop.localizingCursor();
 

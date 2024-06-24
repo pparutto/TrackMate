@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -23,12 +23,14 @@ package fiji.plugin.trackmate.action;
 
 import fiji.plugin.trackmate.Logger;
 
-public abstract class AbstractTMAction implements TrackMateAction {
+public abstract class AbstractTMAction implements TrackMateAction
+{
 
 	protected Logger logger = Logger.VOID_LOGGER;
-	
+
 	@Override
-	public void setLogger(final Logger logger) {
+	public void setLogger( final Logger logger )
+	{
 		this.logger = logger;
 	}
 }

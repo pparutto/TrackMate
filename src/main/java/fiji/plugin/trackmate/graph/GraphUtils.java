@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -93,7 +93,6 @@ public class GraphUtils
 		final HashMap< Integer, StringBuilder > strings = new HashMap<>( nframes );
 		for ( final Integer frame : frames )
 			strings.put( frame, new StringBuilder() );
-
 
 		final HashMap< Integer, StringBuilder > below = new HashMap<>( nframes );
 		for ( final Integer frame : frames )

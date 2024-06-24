@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -33,7 +33,6 @@ import java.util.TreeSet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -45,7 +44,7 @@ import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
 import fiji.plugin.trackmate.tracking.SpotTracker;
-import fiji.plugin.trackmate.util.TMUtils;
+import fiji.plugin.trackmate.util.Threads;
 import net.imglib2.KDTree;
 import net.imglib2.RealPoint;
 import net.imglib2.algorithm.MultiThreadedBenchmarkAlgorithm;
@@ -110,7 +109,7 @@ public class NearestNeighborTracker extends MultiThreadedBenchmarkAlgorithm impl
 
 		// Prepare executors.
 		final AtomicInteger progress = new AtomicInteger( 0 );
-		final ExecutorService executors = Executors.newFixedThreadPool( numThreads );
+		final ExecutorService executors = Threads.newFixedThreadPool( numThreads );
 		final List< Future< Void > > futures = new ArrayList<>( frames.size() );
 		for ( int i = frames.first(); i < frames.last(); i++ )
 		{
@@ -142,7 +141,7 @@ public class NearestNeighborTracker extends MultiThreadedBenchmarkAlgorithm impl
 					{
 						final double[] coords = new double[ 3 ];
 						final Spot spot = targetIt.next();
-						TMUtils.localize( spot, coords );
+						spot.localize( coords );
 						targetCoords.add( new RealPoint( coords ) );
 						targetNodes.add( new FlagNode<>( spot ) );
 					}
@@ -159,7 +158,7 @@ public class NearestNeighborTracker extends MultiThreadedBenchmarkAlgorithm impl
 					{
 						final Spot source = sourceIt.next();
 						final double[] coords = new double[ 3 ];
-						TMUtils.localize( source, coords );
+						source.localize( coords );
 						final RealPoint sourceCoords = new RealPoint( coords );
 						search.search( sourceCoords );
 

@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -24,9 +24,8 @@ package fiji.plugin.trackmate.detection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.util.Threads;
 import net.imglib2.Interval;
 import net.imglib2.RandomAccessible;
 import net.imglib2.algorithm.MultiThreaded;
@@ -42,7 +41,7 @@ import net.imglib2.util.Util;
 import net.imglib2.view.IntervalView;
 import net.imglib2.view.Views;
 
-public class LogDetector< T extends RealType< T > & NativeType< T >> implements SpotDetector< T >, MultiThreaded
+public class LogDetector< T extends RealType< T > & NativeType< T > > implements SpotDetector< T >, MultiThreaded
 {
 
 	/*
@@ -141,7 +140,6 @@ public class LogDetector< T extends RealType< T > & NativeType< T >> implements 
 			}
 		}
 
-
 		// Squeeze singleton dimensions
 		int ndims = interval.numDimensions();
 		for ( int d = 0; d < interval.numDimensions(); d++ )
@@ -160,8 +158,8 @@ public class LogDetector< T extends RealType< T > & NativeType< T >> implements 
 		final ImgFactory< ComplexFloatType > imgFactory = Util.getArrayOrCellImgFactory( fftinterval, new ComplexFloatType() );
 		fftconv.setFFTImgFactory( imgFactory );
 
-		final ExecutorService service = Executors.newFixedThreadPool(numThreads);
-		fftconv.setExecutorService(service);
+		final ExecutorService service = Threads.newFixedThreadPool( numThreads );
+		fftconv.setExecutorService( service );
 
 		fftconv.convolve();
 		service.shutdown();

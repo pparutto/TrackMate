@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -76,6 +76,8 @@ public class ThresholdDetectorFactory< T extends RealType< T > & NativeType< T >
 			+ "the (possibly simplified) contour of the region. In 3D, a spherical "
 			+ "spot is created for each region in its center, with a volume equal to the "
 			+ "region volume."
+			+ "<p>"
+			+ "The spot quality stores the object area or volume in pixels."
 			+ "</html>";
 
 	public static final String KEY_SIMPLIFY_CONTOURS = "SIMPLIFY_CONTOURS";

@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -40,11 +40,11 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.scijava.Context;
+import org.scijava.util.DoubleArray;
 
 import fiji.plugin.trackmate.Dimension;
 import fiji.plugin.trackmate.Logger;
 import fiji.plugin.trackmate.Settings;
-import fiji.plugin.trackmate.Spot;
 import ij.IJ;
 import ij.ImagePlus;
 import net.imagej.ImgPlus;
@@ -65,6 +65,8 @@ public class TMUtils
 {
 
 	private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat( "EEE, d MMM yyyy HH:mm:ss" );
+
+	private static Context context;
 
 	/*
 	 * STATIC METHODS
@@ -88,7 +90,7 @@ public class TMUtils
 			}
 		};
 		Collections.sort( list, c );
-		final LinkedHashMap< K, V > result = new LinkedHashMap< >();
+		final LinkedHashMap< K, V > result = new LinkedHashMap<>();
 		for ( final Map.Entry< K, V > entry : list )
 			result.put( entry.getKey(), entry.getValue() );
 		return result;
@@ -164,10 +166,10 @@ public class TMUtils
 	public static final < T > boolean checkMapKeys( final Map< T, ? > map, Collection< T > mandatoryKeys, Collection< T > optionalKeys, final StringBuilder errorHolder )
 	{
 		if ( null == optionalKeys )
-			optionalKeys = new ArrayList< >();
+			optionalKeys = new ArrayList<>();
 
 		if ( null == mandatoryKeys )
-			mandatoryKeys = new ArrayList< >();
+			mandatoryKeys = new ArrayList<>();
 
 		boolean ok = true;
 		final Set< T > keySet = map.keySet();
@@ -229,7 +231,7 @@ public class TMUtils
 	 */
 	public static final < J, K > List< K > getArrayFromMaping( final Collection< J > keys, final Map< J, K > mapping )
 	{
-		final List< K > names = new ArrayList< >( keys.size() );
+		final List< K > names = new ArrayList<>( keys.size() );
 		for ( final J key : keys )
 			names.add( mapping.get( key ) );
 		return names;
@@ -312,27 +314,27 @@ public class TMUtils
 	 */
 	private static final double[] getRange( final double[] data )
 	{
+		if ( data.length == 0 )
+			return new double[] { 1., 0., 1. };
+
 		final double min = Arrays.stream( data ).min().getAsDouble();
 		final double max = Arrays.stream( data ).max().getAsDouble();
 		return new double[] { ( max - min ), min, max };
 	}
 
 	/**
-	 * Store the x, y, z coordinates of the specified spot in the first 3
-	 * elements of the specified double array.
-	 */
-	public static final void localize( final Spot spot, final double[] coords )
-	{
-		coords[ 0 ] = spot.getFeature( Spot.POSITION_X ).doubleValue();
-		coords[ 1 ] = spot.getFeature( Spot.POSITION_Y ).doubleValue();
-		coords[ 2 ] = spot.getFeature( Spot.POSITION_Z ).doubleValue();
-	}
-
-	/**
-	 * Return the optimal bin number for a histogram of the data given in array,
-	 * using the Freedman and Diaconis rule (bin_space = 2*IQR/n^(1/3)). It is
-	 * ensured that the bin number returned is not smaller and no bigger than
-	 * the bounds given in argument.
+	 * Returns the optimal bin number for a histogram of the data given in
+	 * array, using the Freedman and Diaconis rule (bin_space = 2*IQR/n^(1/3)).
+	 * It is ensured that the bin number returned is not smaller and no bigger
+	 * than the bounds given in argument.
+	 * 
+	 * @param values
+	 *            the values.
+	 * @param minBinNumber
+	 *            a minimal number of bins.
+	 * @param maxBinNumber
+	 *            a maximal number of bins.
+	 * @return a number of bins.
 	 */
 	public static final int getNBins( final double[] values, final int minBinNumber, final int maxBinNumber )
 	{
@@ -509,14 +511,10 @@ public class TMUtils
 	public static < T extends Type< T > > ImgPlus< T > hyperSlice( final ImgPlus< T > img, final long channel, final long frame )
 	{
 		final int timeDim = img.dimensionIndex( Axes.TIME );
-		final ImgPlus< T > imgT = timeDim < 0
-				? img
-				: ImgPlusViews.hyperSlice( img, timeDim, frame );
+		final ImgPlus< T > imgT = timeDim < 0 ? img : ImgPlusViews.hyperSlice( img, timeDim, frame );
 
 		final int channelDim = imgT.dimensionIndex( Axes.CHANNEL );
-		final ImgPlus< T > imgTC = channelDim < 0
-				? imgT
-				: ImgPlusViews.hyperSlice( imgT, channelDim, channel );
+		final ImgPlus< T > imgTC = channelDim < 0 ? imgT : ImgPlusViews.hyperSlice( imgT, channelDim, channel );
 
 		// Squeeze Z dimension if its size is 1.
 		final int zDim = imgTC.dimensionIndex( Axes.Z );
@@ -592,16 +590,21 @@ public class TMUtils
 			{
 				if ( d != cindex )
 				{
-					min2[ d2 ] = min[ d ];
-					max2[ d2 ] = max[ d ];
+					min2[ d2 ] = Math.max( 0l, min[ d ] );
+					max2[ d2 ] = Math.min( img.max( d ), max[ d ] );
 					d2++;
 				}
 			}
 		}
 		else
 		{
-			max2 = max;
-			min2 = min;
+			min2 = new long[ min.length ];
+			max2 = new long[ min.length ];
+			for ( int d = 0; d < min.length; d++ )
+			{
+				min2[ d ] = Math.max( 0l, min[ d ] );
+				max2[ d ] = Math.min( img.max( d ), max[ d ] );
+			}
 		}
 
 		final FinalInterval interval = new FinalInterval( min2, max2 );
@@ -691,16 +694,31 @@ public class TMUtils
 		}
 		else
 		{
-			intervalMin = min;
-			intervalMax = max;
+			intervalMin = new long[ min.length ];
+			intervalMax = new long[ min.length ];
+			for ( int d = 0; d < min.length; d++ )
+			{
+				intervalMin[ d ] = Math.max( 0l, min[ d ] );
+				intervalMax[ d ] = Math.min( img.max( d ), max[ d ] );
+			}
 		}
 		final FinalInterval interval = new FinalInterval( intervalMin, intervalMax );
 		return interval;
 	}
 
 	/** Obtains the SciJava {@link Context} in use by ImageJ. */
-	public static Context getContext() {
-		return ( Context ) IJ.runPlugIn( "org.scijava.Context", "" );
+	public static Context getContext()
+	{
+		final Context localContext = context;
+		if ( localContext != null )
+			return localContext;
+
+		synchronized ( TMUtils.class )
+		{
+			if ( context == null )
+				context = ( Context ) IJ.runPlugIn( "org.scijava.Context", "" );
+			return context;
+		}
 	}
 
 	/**
@@ -717,9 +735,7 @@ public class TMUtils
 	public static File proposeTrackMateSaveFile( final Settings settings, final Logger logger )
 	{
 		File folder;
-		if ( null != settings.imp
-				&& null != settings.imp.getOriginalFileInfo()
-				&& null != settings.imp.getOriginalFileInfo().directory )
+		if ( null != settings.imp && null != settings.imp.getOriginalFileInfo() && null != settings.imp.getOriginalFileInfo().directory )
 		{
 			final String directory = settings.imp.getOriginalFileInfo().directory;
 			folder = Paths.get( directory ).toAbsolutePath().toFile();
@@ -729,7 +745,7 @@ public class TMUtils
 			 */
 			settings.imageFolder = settings.imp.getOriginalFileInfo().directory;
 		}
-		else if ( !settings.imageFolder.isEmpty()  )
+		else if ( !settings.imageFolder.isEmpty() )
 		{
 			final String absolutePath = FileSystems.getDefault().getPath( settings.imageFolder ).normalize().toAbsolutePath().toString();
 			folder = new File( absolutePath );
@@ -741,9 +757,7 @@ public class TMUtils
 			 * Warn the user that the file cannot be reloaded properly because
 			 * the source image does not match a file.
 			 */
-			logger.error( "Warning: The source image does not match a file on the system."
-					+ "TrackMate won't be able to reload it when opening this XML file.\n"
-					+ "To fix this, save the source image to a TIF file before saving the TrackMate session.\n" );
+			logger.error( "Warning: The source image does not match a file on the system." + "TrackMate won't be able to reload it when opening this XML file.\n" + "To fix this, save the source image to a TIF file before saving the TrackMate session.\n" );
 			settings.imageFolder = "";
 		}
 
@@ -754,17 +768,17 @@ public class TMUtils
 		}
 		catch ( final NullPointerException npe )
 		{
-			if (settings.imageFileName.isEmpty())
+			if ( settings.imageFileName.isEmpty() )
 				file = new File( folder, "TrackMateData.xml" );
 			else
 			{
 				final String imName = settings.imageFileName;
 				final int i = imName.lastIndexOf( '.' );
 				String xmlName;
-				if (i<0)
-					xmlName = imName +".xml";
+				if ( i < 0 )
+					xmlName = imName + ".xml";
 				else
-					xmlName = imName.substring( 0, i ) +".xml";
+					xmlName = imName.substring( 0, i ) + ".xml";
 				file = new File( folder, xmlName );
 			}
 		}
@@ -789,9 +803,66 @@ public class TMUtils
 		return Math.sqrt( variance( data ) );
 	}
 
-	public static double sum( final double[] intensities )
+	public static double sum( final double[] data )
 	{
-		return Arrays.stream( intensities ).sum();
+		return Arrays.stream( data ).sum();
+	}
+
+	public static double average( final DoubleArray data )
+	{
+		return sum( data ) / data.size();
+	}
+
+	public static double sum( final DoubleArray data )
+	{
+		double sum = 0.;
+		for ( int i = 0; i < data.size(); i++ )
+			sum += data.getArray()[ i ];
+		return sum;
+	}
+
+	public static final double variance( final DoubleArray data )
+	{
+		final double mean = average( data );
+		double variance = 0;
+		for ( int i = 0; i < data.size(); i++ )
+		{
+			final double dx = data.getArray()[ i ] - mean;
+			variance += dx * dx;
+		}
+		variance /= ( data.size() - 1 );
+		return variance;
+	}
+
+	public static double standardDeviation( final DoubleArray data )
+	{
+		return Math.sqrt( variance( data ) );
+	}
+
+	/**
+	 * Returns a string of the name of the image without the extension, with the
+	 * full path
+	 * 
+	 * @return full name of the image without the extension
+	 */
+	public static String getImagePathWithoutExtension( final Settings settings )
+	{
+		final String imageFolder = ( settings.imageFolder == null )
+				? System.getProperty( "user.home" )
+				: settings.imageFolder;
+
+		final String imageFileName = settings.imageFileName;
+		if ( imageFileName != null )
+		{
+			final int lastIndexOf = imageFileName.lastIndexOf( "." );
+			if ( lastIndexOf > 0 )
+				return imageFolder + imageFileName.substring( 0, imageFileName.lastIndexOf( "." ) );
+			return imageFolder + imageFileName;
+		}
+		else
+		{
+			return imageFolder + File.separator + "TrackMate";
+		}
 	}
 
 	private TMUtils()

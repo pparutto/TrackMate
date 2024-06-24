@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -46,9 +46,11 @@ public class WizardPanel extends JPanel
 	private static final long serialVersionUID = 1L;
 
 	public static final Font FONT = new Font( "Arial", Font.PLAIN, 10 );
+
 	public static final Font BIG_FONT = new Font( "Arial", Font.PLAIN, 14 );
+
 	public static final Font SMALL_FONT = FONT.deriveFont( 8 );
-	
+
 	private final CardLayout cardLayout;
 
 	private final AnimatorPanel animatorPanel;
@@ -70,7 +72,6 @@ public class WizardPanel extends JPanel
 	final JButton btnResume;
 
 	final JPanel panelButtons;
-
 
 	public WizardPanel()
 	{
@@ -102,7 +103,7 @@ public class WizardPanel extends JPanel
 
 		btnNext = new JButton();
 		panelButtons.add( btnNext );
-		
+
 		this.btnCancel = new JButton();
 		panelButtons.add( btnCancel );
 

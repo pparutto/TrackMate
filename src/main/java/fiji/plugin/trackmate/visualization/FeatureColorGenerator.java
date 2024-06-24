@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -25,11 +25,13 @@ import java.awt.Color;
 import java.util.function.Function;
 
 /**
- * Interface for color generator that can color objects based on a
- * feature identified by a String.
+ * Interface for color generator that can color objects based on a feature
+ * identified by a String.
+ * 
  * @author Jean-Yves Tinevez - 2013
  *
- * @param <K> the type of object to color.
+ * @param <K>
+ *            the type of object to color.
  */
 public interface FeatureColorGenerator< K > extends Function< K, Color >
 {

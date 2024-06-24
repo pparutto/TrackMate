@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -26,12 +26,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.function.ToDoubleFunction;
 
 import org.scijava.thread.ThreadService;
 
 import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.util.Threads;
 import fiji.plugin.trackmate.util.TMUtils;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
@@ -120,7 +120,7 @@ public class HessianDetector< T extends RealType< T > & NativeType< T > > implem
 		// Handle multithreading.
 		final ThreadService threadService = TMUtils.getContext().getService( ThreadService.class );
 		if ( threadService == null )
-			es = Executors.newCachedThreadPool();
+			es = Threads.newCachedThreadPool();
 		else
 			es = threadService.getExecutorService();
 	}

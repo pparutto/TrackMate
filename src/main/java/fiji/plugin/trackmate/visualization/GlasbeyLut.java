@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -23,10 +23,12 @@ package fiji.plugin.trackmate.visualization;
 
 import java.awt.Color;
 
+import ij.process.LUT;
+
 public class GlasbeyLut
 {
 
-	private static final Color[] colors = new Color[] {
+	public static final Color[] colors = new Color[] {
 			new Color( 255, 255, 255 ),
 			new Color( 20, 20, 255 ),
 			new Color( 255, 20, 20 ),
@@ -301,4 +303,18 @@ public class GlasbeyLut
 		return colors[ index ];
 	}
 
+	public static LUT toLUT()
+	{
+		final byte[] r = new byte[ 256 ];
+		final byte[] g = new byte[ 256 ];
+		final byte[] b = new byte[ 256 ];
+		for ( int i = 1; i < 256; i++ )
+		{
+			final Color c = colors[ ( i - 1 + colors.length / 2 ) % colors.length ];
+			r[ i ] = ( byte ) ( ( 0xFF ) & c.getRed() );
+			g[ i ] = ( byte ) ( ( 0xFF ) & c.getGreen() );
+			b[ i ] = ( byte ) ( ( 0xFF ) & c.getBlue() );
+		}
+		return new LUT( r, g, b );
+	}
 }

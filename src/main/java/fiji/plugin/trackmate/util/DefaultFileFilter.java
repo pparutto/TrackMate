@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -152,13 +152,15 @@ public class DefaultFileFilter extends FileFilter
 		@Override
 		public boolean accept( final File file )
 		{
-			if ( file.isDirectory() ) { return true; }
+			if ( file.isDirectory() )
+				return true;
 
 			final String filename = file.toString().toLowerCase();
 
 			for ( int j = 0; j < imageFormats.length; j++ )
 			{
-				if ( filename.endsWith( "." + imageFormats[ j ].toLowerCase() ) ) { return true; }
+				if ( filename.endsWith( "." + imageFormats[ j ].toLowerCase() ) )
+					return true;
 			}
 
 			return false;
@@ -211,7 +213,8 @@ public class DefaultFileFilter extends FileFilter
 		@Override
 		public boolean accept( final File file )
 		{
-			if ( file.isDirectory() ) { return true; }
+			if ( file.isDirectory() )
+				return true;
 
 			final String filename = file.getName().toLowerCase();
 

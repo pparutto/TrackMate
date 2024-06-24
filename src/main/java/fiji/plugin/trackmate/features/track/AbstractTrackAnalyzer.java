@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -28,7 +28,6 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 import javax.swing.ImageIcon;
@@ -37,6 +36,7 @@ import org.scijava.plugin.Plugin;
 
 import fiji.plugin.trackmate.Dimension;
 import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.util.Threads;
 
 /**
  * Abstract class for track analyzers that are local and not manual. Offers
@@ -198,7 +198,7 @@ public abstract class AbstractTrackAnalyzer implements TrackAnalyzer
 			tasks.add( task );
 		}
 
-		final ExecutorService executorService = Executors.newFixedThreadPool( numThreads );
+		final ExecutorService executorService = Threads.newFixedThreadPool( numThreads );
 		List< Future< Void > > futures;
 		try
 		{

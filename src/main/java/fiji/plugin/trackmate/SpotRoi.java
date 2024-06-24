@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -152,10 +152,10 @@ public class SpotRoi
 		final double yc = centroid[ 1 ];
 		final double[] xr = Arrays.stream( x ).map( x0 -> x0 - xc ).toArray();
 		final double[] yr = Arrays.stream( y ).map( y0 -> y0 - yc ).toArray();
-		
+
 		// Create roi.
 		final SpotRoi roi = new SpotRoi( xr, yr );
-		
+
 		// Create spot.
 		final double z = 0.;
 		final double r = roi.radius();

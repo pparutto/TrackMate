@@ -1,8 +1,8 @@
 /*-
  * #%L
- * Fiji distribution of ImageJ for the life sciences.
+ * TrackMate: your buddy for everyday tracking.
  * %%
- * Copyright (C) 2010 - 2022 Fiji developers.
+ * Copyright (C) 2010 - 2024 TrackMate developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -429,7 +429,9 @@ public class TmXmlReader
 	/**
 	 * Reads the settings element of the file, and sets the fields of the
 	 * specified {@link Settings} object according to the xml file content.
-	 * 
+	 * Returns <code>null</code> if the settings element cannot be found in the
+	 * file.
+	 *
 	 * @param imp
 	 *
 	 * @param detectorProvider
