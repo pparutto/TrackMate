@@ -71,7 +71,7 @@ public class EdgeAmbiguityAnalyzer extends AbstractEdgeAnalyzer
 		final FeatureModel featureModel = model.getFeatureModel();
 		final Spot s = model.getTrackModel().getEdgeSource( edge );
 		final Spot t = model.getTrackModel().getEdgeTarget( edge );
-		final double linkDistSq = Math.pow( (double) settings.trackerSettings.get( KEY_LINKING_MAX_DISTANCE ), 2 );
+		final double linkDistSq = Math.pow( ( double ) settings.trackerSettings.get( KEY_LINKING_MAX_DISTANCE ), 2 );
 
 		int nspots = 0;
 		Iterator<Spot> it = model.getSpots().iterator( t.getFeature( "FRAME" ).intValue(), true );
