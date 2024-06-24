@@ -35,7 +35,12 @@ import fiji.plugin.trackmate.FeatureModel;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.tracking.jaqaman.costfunction.ComponentDistancesTime;
+import fiji.plugin.trackmate.tracking.jaqaman.costfunction.CostFunction;
+import fiji.plugin.trackmate.tracking.jaqaman.costfunction.ReachableDistCostFunctionTime;
+import fiji.plugin.trackmate.tracking.jaqaman.costfunction.SquareDistCostFunction;
 
+import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_COMPONENTS_DISTANCES;
 import static fiji.plugin.trackmate.tracking.TrackerKeys.KEY_LINKING_MAX_DISTANCE;
 
 @Plugin( type = EdgeAnalyzer.class )
@@ -73,12 +78,18 @@ public class EdgeAmbiguityAnalyzer extends AbstractEdgeAnalyzer
 		final Spot t = model.getTrackModel().getEdgeTarget( edge );
 		final double linkDistSq = Math.pow( ( double ) settings.trackerSettings.get( KEY_LINKING_MAX_DISTANCE ), 2 );
 
+		CostFunction<Spot, Spot> distFun = null;
+		if ( settings.trackerSettings.containsKey( KEY_COMPONENTS_DISTANCES ) )
+			distFun = new ReachableDistCostFunctionTime ( ( ComponentDistancesTime ) settings.trackerSettings.get( KEY_COMPONENTS_DISTANCES ) );
+		else
+			distFun = new SquareDistCostFunction();
+
 		int nspots = 0;
 		Iterator<Spot> it = model.getSpots().iterator( t.getFeature( "FRAME" ).intValue(), true );
 		while ( it.hasNext() )
 		{
 			Spot ss = it.next();
-			if ( s.squareDistanceTo( ss ) <= linkDistSq )
+			if ( distFun.linkingCost( s, ss ) <= linkDistSq )
 				++nspots;
 		}
 
