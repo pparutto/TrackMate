@@ -13,7 +13,7 @@ public class ReachableDistCostFunctionTime implements CostFunction< Spot, Spot >
 		ArrayList<int[]> res = new ArrayList<> ();
 		for ( int[] nh: nhs )
 		{
-			int[] pp = {p[0] + nh[0], p[1] + nh[1]};
+			int[] pp = { p[0] + nh[0], p[1] + nh[1] };
 			if ( pp[0] < 0 || pp[1] < 0 || pp[0] >= w || pp[1] >= h )
 				continue;
 			res.add( pp );
@@ -76,7 +76,6 @@ public class ReachableDistCostFunctionTime implements CostFunction< Spot, Spot >
 					if ( sComp != tComp )
 						continue;
 
-					//System.out.println(String.format("%d %d %d %d %d", curWin, src_px[0], src_px[1], dst_px[0], dst_px[1]));
 					int pxd = cdists.px1D( dst_px );
 					if ( pxs == pxd )
 					{

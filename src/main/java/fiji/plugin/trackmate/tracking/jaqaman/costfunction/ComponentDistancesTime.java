@@ -148,23 +148,6 @@ public class ComponentDistancesTime
 		}
 	}
 
-	public static <T> void sort_simultaneous( int[] arr1, T[] arr2 )
-	{
-		Integer[] idxs = new Integer[arr1.length];
-		for ( int u = 0; u < arr1.length; ++u )
-			idxs[u] = u;
-		Arrays.sort( idxs, new ArrCmp( arr1 ) );
-		int[] tmp1 = new int[arr1.length];
-		ArrayList<T> tmp2 = new ArrayList<> ( arr1.length );
-		for ( int u = 0; u < arr1.length; ++u )
-		{
-			tmp1[u] = arr1[idxs[u]];
-			tmp2.add( arr2[idxs[u]] );
-		}
-		arr1 = tmp1;
-		tmp2.toArray( arr2 );
-	}
-
 	protected HashMap<CompTime, Integer> elts_f;
 	protected ArrayList<CompTime> elts_r;
 	Distances dists;
@@ -428,7 +411,9 @@ public class ComponentDistancesTime
 		{
 			int frame = s.getFeature( "FRAME" ).intValue();
 			int px = (int) Math.ceil( s.getFeature( "POSITION_X" ) / this.pxsize );
+			s.putFeature( "PX_X", Double.valueOf( px ) );
 			int py = (int) Math.ceil( s.getFeature( "POSITION_Y" ) / this.pxsize );
+			s.putFeature( "PX_Y", Double.valueOf( py ) );
 
 			ArrayList< SpotComp > comps = new ArrayList<>();
 			if ( this.is2D )
