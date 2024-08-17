@@ -243,7 +243,7 @@ public class ComponentDistancesTime
 
 				int dw = ( int ) Math.floor( Wdur * ( 1 - Wover ) );
 				if ( Wover == 0 )
-					dw = Wdur;
+					dw = Wdur - 1;
 
 				this.win_starts.add( 0 );
 				for ( int i = 1; i < Wmax; ++i )
@@ -405,15 +405,14 @@ public class ComponentDistancesTime
 		return res;
 	}
 
+	//This function needs spots to have PX_X and PX_Y features
 	public void preprocess_spots( final SpotCollection spots )
 	{
 		for ( final Spot s: spots.iterable( true ) )
 		{
 			int frame = s.getFeature( "FRAME" ).intValue();
-			int px = (int) Math.ceil( s.getFeature( "POSITION_X" ) / this.pxsize );
-			s.putFeature( "PX_X", Double.valueOf( px ) );
-			int py = (int) Math.ceil( s.getFeature( "POSITION_Y" ) / this.pxsize );
-			s.putFeature( "PX_Y", Double.valueOf( py ) );
+			int px = s.getFeature( "PX_X" ).intValue();
+			int py = s.getFeature( "PX_Y" ).intValue();
 
 			ArrayList< SpotComp > comps = new ArrayList<>();
 			if ( this.is2D )
