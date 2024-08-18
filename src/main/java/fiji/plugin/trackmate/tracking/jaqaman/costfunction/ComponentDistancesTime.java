@@ -243,11 +243,13 @@ public class ComponentDistancesTime
 
 				int dw = ( int ) Math.floor( Wdur * ( 1 - Wover ) );
 				if ( Wover == 0 )
-					dw = Wdur - 1;
+					dw = Wdur;
+					//dw = Wdur - 1; //SPTFidelity 2024
 
 				this.win_starts.add( 0 );
 				for ( int i = 1; i < Wmax; ++i )
-					this.win_starts.add( ( dw + 1 ) * i );
+					this.win_starts.add( dw * i );
+					//this.win_starts.add( ( dw + 1 ) * i ); //SPTFidelity 2024
 
 				String s = "";
 				for ( int i = 0; i < this.win_starts.size() ; ++i )
