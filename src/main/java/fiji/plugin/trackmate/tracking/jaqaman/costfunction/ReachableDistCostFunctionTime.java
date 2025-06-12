@@ -38,6 +38,10 @@ public class ReachableDistCostFunctionTime implements CostFunction< Spot, Spot >
 	@Override
 	public double linkingCost( final Spot source, final Spot target )
 	{
+		if ( source.getFeature( "POSITION_X" ).isNaN() || source.getFeature( "POSITION_Y" ).isNaN() ||
+			 target.getFeature( "POSITION_X" ).isNaN() || target.getFeature( "POSITION_Y" ).isNaN() )
+			return Double.MAX_VALUE;
+
 		int sFrame = source.getFeature( "FRAME" ).intValue();
 		int tFrame = target.getFeature( "FRAME" ).intValue();
 		int[] src_px2D = { source.getFeature( "PX_X" ).intValue(), source.getFeature( "PX_Y" ).intValue() };
