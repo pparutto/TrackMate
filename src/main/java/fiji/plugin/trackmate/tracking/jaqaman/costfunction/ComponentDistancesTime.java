@@ -412,6 +412,9 @@ public class ComponentDistancesTime
 	{
 		for ( final Spot s: spots.iterable( true ) )
 		{
+			if ( s.getFeature( "POSITION_X" ).isNaN() )
+				continue; //this is a fake spot, we just skip it
+
 			int frame = s.getFeature( "FRAME" ).intValue();
 			int px = s.getFeature( "PX_X" ).intValue();
 			int py = s.getFeature( "PX_Y" ).intValue();
